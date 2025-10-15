@@ -254,7 +254,7 @@ const slides = [
   // 11. S-03A - Live Bidding Room Opening
   { id: "S-03A", title: "Live Bidding Room - Opening", role: "Subscriber", content: `
     <h2 style="text-align:center; margin-bottom:16px;">Chit Auction Live — Month 8</h2>
-    <div class="countdown-circle">60s</div>
+    <div class="countdown-circle" id="opening-countdown">60s</div>
     <div class="card"><div class="info-row"><span class="info-label">Chit ID</span><span class="info-value">CHT-KGN-500K-50M</span></div><div class="info-row"><span class="info-label">Value</span><span class="info-value">₹5,00,000</span></div><div class="info-row"><span class="info-label">Starting Discount</span><span class="info-value">₹50,000</span></div></div>
     <h3 style="font-size:14px; margin:20px 0 12px;">Active Subscribers (${presentMembers.length})</h3>
     <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;">${presentMembers.slice(0, 8).map(name => `<span class="badge green">🟢 ${name}</span>`).join('')}</div>
@@ -821,6 +821,14 @@ function startSlideCountdowns() {
     console.log('Starting F-09 countdown');
     setTimeout(() => {
       startCountdown('auto-accept-countdown', 45);
+    }, 100);
+  }
+  
+  // S-03A - Live Bidding Room Opening (60s)
+  if (currentSlide.id === 'S-03A') {
+    console.log('Starting S-03A countdown');
+    setTimeout(() => {
+      startCountdown('opening-countdown', 60);
     }, 100);
   }
 }
