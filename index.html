@@ -9,8 +9,8 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif; background: #000000; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
 .device-frame { width: 375px; height: 812px; background: #000; border-radius: 40px; padding: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
-.device-notch { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 200px; height: 30px; background: #000; border-radius: 0 0 20px 20px; z-index: 1000; }
-.status-bar { position: absolute; top: 0; left: 0; right: 0; height: 44px; background: linear-gradient(to bottom, rgba(0,0,0,0.1), transparent); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 12px; color: #fff; z-index: 999; }
+.device-notch { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 200px; height: 30px; background: #000; border-radius: 0 0 20px 20px; z-index: 1000; pointer-events: none; }
+.status-bar { position: absolute; top: 0; left: 0; right: 0; height: 44px; background: linear-gradient(to bottom, rgba(0,0,0,0.1), transparent); display: flex; justify-content: space-between; align-items: center; padding: 0 24px; font-size: 12px; color: #fff; z-index: 999; }
 .slideshow-container { width: 100%; height: 100%; position: relative; background: #fff; border-radius: 32px; overflow: hidden; }
 .slide { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; overflow-y: auto; animation: fadeIn 0.5s ease-in-out; }
 .slide.active { display: block; }
@@ -84,12 +84,12 @@ select.input-field { appearance: none; background-image: url("data:image/svg+xml
 
 <div class="nav-arrow left" onclick="changeSlide(-1)">‹</div>
 <div class="nav-arrow right" onclick="changeSlide(1)">›</div>
-<div class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">36</span></div>
+<div class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">37</span></div>
 
 <div class="device-frame">
   <div class="device-notch"></div>
   <div class="status-bar">
-    <span>⚡ LTE</span>
+    <span>📶 ⚡ LTE</span>
     <span id="statusTime">9:31</span>
     <span>🔋 78%</span>
   </div>
@@ -107,7 +107,14 @@ const winner = subscribers[2]; // RAVI - ONLY WINNER
 // Instruction to Cursor: Only reorder slides in correct flow. Do NOT change text, content, placeholders, or styling.
 
 const slides = [
-  // 1. LOGO - Company Introduction (FIRST SCREEN)
+  // 1. LOGO ONLY - Full Screen Logo (FIRST SCREEN)
+  { id: "LOGO-ONLY", title: "", role: "", content: `
+    <div style="width:100%; height:100vh; background:#fff; display:flex; align-items:center; justify-content:center; padding:20px;">
+      <img src="LOGO.png" alt="Company Logo" style="max-width:90%; max-height:90%; width:auto; height:auto; object-fit:contain;">
+    </div>
+  `},
+  
+  // 2. LOGO - Company Introduction
   { id: "LOGO", title: "Live Auction App", role: "System", content: `
     <div style="text-align:center; padding:40px 20px; min-height:100vh; display:flex; flex-direction:column; justify-content:center;">
       <img src="LOGO.png" alt="Company Logo" style="max-width:100%; max-height:450px; width:auto; height:auto; margin:0 auto 40px; display:block;">
@@ -132,6 +139,12 @@ const slides = [
     <div class="chit-card closed"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><span style="font-weight:600;">CHT-KGN-500K-50M</span><span class="badge grey">Completed</span></div><div style="font-size:13px; color:#666; margin-bottom:8px;">Completed: Sep 2025<br>Winner: ${winner}</div><button class="btn btn-secondary">View Report</button></div>
     <div class="chit-card closed"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><span style="font-weight:600;">CHT-NZB-1000K-100M</span><span class="badge grey">Completed</span></div><div style="font-size:13px; color:#666; margin-bottom:8px;">Completed: Aug 2025<br>Winner: ${subscribers[26]}</div><button class="btn btn-secondary">View Report</button></div>
     <button class="btn btn-secondary" style="margin-top:16px;">Load More...</button>
+    
+    <div style="margin-top:40px; padding:20px; background:linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius:12px; text-align:center;">
+      <h3 style="margin-bottom:16px; color:#495057;">📋 View Quotation & Pricing</h3>
+      <p style="font-size:14px; color:#6c757d; margin-bottom:20px;">Get detailed pricing and package comparison</p>
+      <button class="btn btn-primary" onclick="window.open('quotation.html', '_blank')" style="background:linear-gradient(135deg, #007bff 0%, #0056b3 100%); padding:12px 24px; font-size:16px; font-weight:600;">💰 View Quotation Page</button>
+    </div>
   `},
   
   // 2. F-00B - Create Chit
@@ -174,9 +187,9 @@ const slides = [
   // 6. F-05 - Consent to Start
   { id: "F-05", title: "Start Auction Consent", role: "Foreman", content: `
     <h2 style="text-align:center; margin-bottom:16px;">Start Auction Consent</h2>
-    <div class="countdown-circle">60s</div>
+    <div class="countdown-circle" id="consent-countdown-1">60s</div>
     <div class="card"><div class="info-row"><span class="info-label">Present</span><span class="info-value" style="color:#28a745;">${presentMembers.length}</span></div><div class="info-row"><span class="info-label">Absent</span><span class="info-value" style="color:#dc3545;">${absentMembers.length}</span></div></div>
-    <div style="background:#fff3cd; padding:16px; border-radius:10px; margin:20px 0; font-size:13px; text-align:center;">⚠️ All present must click 'Agree'<br>Auto-accept in 60s</div>
+    <div style="background:#fff3cd; padding:16px; border-radius:10px; margin:20px 0; font-size:13px; text-align:center;">⚠️ All present must click 'Agree'<br>Auto-accept in <span id="consent-timer-1">60s</span></div>
     <button class="btn btn-primary">✓ Agree</button><button class="btn btn-secondary">✗ Decline</button>
   `},
   
@@ -205,7 +218,7 @@ const slides = [
     <div class="rule-item"><strong>3.</strong> Brindavan Chits commission = 5% (₹25,000).</div>
     <div class="rule-item"><strong>4.</strong> Discount minus commission distributed as dividend.</div>
     <div class="rule-item"><strong>5.</strong> Inactivity auto-accepts consent after 60s.</div>
-    <div class="rule-item"><strong>6.</strong> One bid per 10-second interval.</div>
+    <div class="rule-item"><strong>6.</strong> One bid per 5-second interval.</div>
     <button class="btn btn-primary" style="margin-top:24px;">✓ I Understand</button>
   `},
   
@@ -308,7 +321,7 @@ const slides = [
   // 17. S-05 - Inactivity Alert (RAVI'S FINAL WINNING BID)
   { id: "S-05", title: "Inactivity Alert", role: "Subscriber", content: `
     <h2 style="text-align:center; margin-bottom:16px;">⚠️ Inactivity Alert</h2>
-    <div class="countdown-circle">60s</div>
+    <div class="countdown-circle" id="inactivity-countdown">60s</div>
     <p style="text-align:center; font-size:14px; color:#666; margin-bottom:24px;">No new bid for 60s<br>Auction may close soon</p>
     <div class="progress-bar" style="margin:24px 0;"><div class="progress-fill" style="width:40%; background:linear-gradient(90deg, #ff6b6b 0%, #ee5a6f 100%);"></div></div>
     <div class="card"><div style="font-size:14px; color:#666; margin-bottom:8px;">Current Top</div><div style="font-size:24px; font-weight:700; color:#4facfe; margin-bottom:8px;">₹1,00,000</div><div style="font-size:13px; color:#666;">by ${winner}</div></div>
@@ -328,7 +341,7 @@ const slides = [
   { id: "S-05A", title: "Final Countdown", role: "Subscriber", content: `
     <h2 style="text-align:center; margin-bottom:16px; color:#dc3545;">🔥 Final 60 Seconds!</h2>
     <p style="text-align:center; font-size:14px; margin-bottom:24px;">Last call for bids</p>
-    <div style="width:200px; height:200px; border-radius:50%; background:conic-gradient(#dc3545 0% 60%, #e0e0e0 60% 100%); margin:20px auto; display:flex; align-items:center; justify-content:center;"><div style="width:160px; height:160px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; flex-direction:column;"><div style="font-size:42px; font-weight:700; color:#dc3545;">36</div><div style="font-size:13px; color:#666;">seconds</div></div></div>
+    <div style="width:200px; height:200px; border-radius:50%; background:conic-gradient(#dc3545 0% 60%, #e0e0e0 60% 100%); margin:20px auto; display:flex; align-items:center; justify-content:center;"><div style="width:160px; height:160px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; flex-direction:column;"><div style="font-size:42px; font-weight:700; color:#dc3545;" id="final-countdown">60</div><div style="font-size:13px; color:#666;">seconds</div></div></div>
     <div class="card"><div style="text-align:center;"><div style="font-size:13px; color:#666; margin-bottom:8px;">No higher bid yet</div><div style="font-size:20px; font-weight:700; color:#4facfe; margin-bottom:4px;">₹1,00,000</div><div style="font-size:14px; color:#666;">by ${winner}</div></div></div>
     <div style="background:#fff3cd; padding:16px; border-radius:10px; margin:20px 0; font-size:13px; text-align:center;">⏰ If no bid in 60s, enters close consent</div>
     <button class="btn btn-primary">🚀 Place Bid</button><button class="btn btn-secondary">⏳ Wait</button>
@@ -337,16 +350,16 @@ const slides = [
   // 20. F-08 - Consent to Close (RAVI)
   { id: "F-08", title: "Close Confirmation", role: "Foreman", content: `
     <h2 style="text-align:center; margin-bottom:16px;">Close Auction?</h2>
-    <div class="countdown-circle">45s</div>
+    <div class="countdown-circle" id="consent-countdown-2">60s</div>
     <div class="card" style="background:#ffeaa7;"><div style="text-align:center;"><div style="font-size:14px; margin-bottom:8px;">Prized Subscriber</div><div style="font-size:24px; font-weight:700; margin-bottom:8px;">${winner}</div><div style="font-size:16px; color:#666;">Discount: ₹1,00,000</div></div></div>
-    <div style="background:#d1ecf1; padding:16px; border-radius:10px; margin:20px 0; font-size:13px; text-align:center;">ℹ️ All must consent<br>Auto-accept after 45s</div>
+    <div style="background:#d1ecf1; padding:16px; border-radius:10px; margin:20px 0; font-size:13px; text-align:center;">ℹ️ All must consent<br>Auto-accept after <span id="consent-timer-2">60s</span></div>
     <button class="btn btn-primary">✓ Agree</button><button class="btn btn-secondary">⚠️ Dispute</button>
   `},
   
   // 21. F-09 - Auto-Accept
   { id: "F-09", title: "Auto-Accept Notice", role: "Foreman", content: `
     <h2 style="margin-bottom:24px;">Auto-Consent Activated</h2>
-    <div style="text-align:center; margin:32px 0;"><div style="width:100px; height:100px; border-radius:50%; background:#ffc107; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:50px;">⏰</div><div style="font-size:32px; font-weight:700; margin:16px 0;">5s</div><p style="font-size:14px; color:#666;">Closing...</p></div>
+    <div style="text-align:center; margin:32px 0;"><div style="width:100px; height:100px; border-radius:50%; background:#ffc107; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:50px;">⏰</div><div style="font-size:32px; font-weight:700; margin:16px 0;" id="auto-accept-countdown">45s</div><p style="font-size:14px; color:#666;">Closing...</p></div>
     <div style="background:#fff3cd; padding:16px; border-radius:10px; margin-bottom:20px;"><div style="font-size:14px; font-weight:600; margin-bottom:12px;">Auto-Accepted:</div><div style="display:flex; flex-wrap:wrap; gap:8px;">${[subscribers[12], subscribers[13], subscribers[14]].map(name => `<span class="badge yellow">${name}</span>`).join('')}</div></div>
     <p style="font-size:13px; color:#666; text-align:center; margin-bottom:24px;">Non-response treated as AGREE</p>
     <button class="btn btn-primary">Continue</button>
@@ -482,7 +495,14 @@ const slides = [
     <div style="margin:24px 0;"><div style="font-size:13px; color:#666; margin-bottom:8px; text-align:center;">Time Until Next</div><div style="display:flex; justify-content:center; gap:16px;"><div style="text-align:center;"><div style="font-size:32px; font-weight:700; color:#4facfe;">30</div><div style="font-size:12px; color:#666;">Days</div></div><div style="text-align:center;"><div style="font-size:32px; font-weight:700; color:#4facfe;">05</div><div style="font-size:12px; color:#666;">Hours</div></div></div></div>
     <div class="progress-bar"><div class="progress-fill" style="width:25%;"></div></div>
     <button class="btn btn-primary" style="margin-top:20px;">📅 View Calendar</button><button class="btn btn-secondary">📢 Notify</button>
+    
+    <div style="margin-top:40px; padding:20px; background:linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius:12px; text-align:center;">
+      <h3 style="margin-bottom:16px; color:#495057;">📋 View Quotation & Pricing</h3>
+      <p style="font-size:14px; color:#6c757d; margin-bottom:20px;">Get detailed pricing and package comparison</p>
+      <button class="btn btn-primary" onclick="window.open('quotation.html', '_blank')" style="background:linear-gradient(135deg, #007bff 0%, #0056b3 100%); padding:12px 24px; font-size:16px; font-weight:600;">💰 View Quotation Page</button>
+    </div>
   `},
+  
   
   
 ];
@@ -511,18 +531,186 @@ function changeSlide(direction) {
   if (currentSlideIndex < 0) currentSlideIndex = slides.length - 1;
   slideElements[currentSlideIndex].classList.add('active');
   document.getElementById('currentSlide').textContent = currentSlideIndex + 1;
+  startSlideCountdowns();
 }
 
 function downloadFile(filename) {
-  const content = `Brindavan Chits Karimnagar - Auction Report\n\nSimulated download for demo.\n\nFile: ${filename}\nGenerated: ${new Date().toLocaleString()}\n\nChit ID: CHT-KGN-500K-50M\nMonth: 8\nPrized Subscriber: ${winner}\nDiscount: ₹1,00,000\nPrize: ₹4,00,000`;
-  const blob = new Blob([content], { type: 'text/plain' });
+  let content = '';
+  let mimeType = 'text/plain';
+  let downloadFilename = filename;
+  
+  if (filename.includes('.pdf')) {
+    content = generatePDFContent();
+    mimeType = 'text/plain';
+    downloadFilename = filename.replace('.pdf', '_report.txt'); // Change to .txt for better compatibility
+  } else if (filename.includes('.csv')) {
+    content = generateCSVContent();
+    mimeType = 'text/csv';
+  } else if (filename.includes('.json')) {
+    content = generateJSONContent();
+    mimeType = 'application/json';
+  } else {
+    content = `Brindavan Chits Karimnagar - Auction Report\n\nSimulated download for demo.\n\nFile: ${filename}\nGenerated: ${new Date().toLocaleString()}\n\nChit ID: CHT-KGN-500K-50M\nMonth: 8\nPrized Subscriber: ${winner}\nDiscount: ₹1,00,000\nPrize: ₹4,00,000`;
+  }
+  
+  const blob = new Blob([content], { type: mimeType });
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = filename;
+  a.download = downloadFilename;
   a.click();
   window.URL.revokeObjectURL(url);
-  alert('✓ File downloaded: ' + filename);
+  alert('✓ File downloaded: ' + downloadFilename);
+}
+
+function generatePDFContent() {
+  const currentDate = new Date().toLocaleDateString('en-IN');
+  const currentTime = new Date().toLocaleTimeString('en-IN');
+  
+  return `
+BRINDAVAN CHITS KARIMNAGAR
+AUCTION SUMMARY REPORT
+=====================================
+
+Chit Fund Details:
+------------------
+Chit ID: CHT-KGN-500K-50M
+Chit Value: ₹5,00,000
+Total Members: 50
+Auction Month: 8 (October 2025)
+Auction Date: ${currentDate}
+Auction Time: ${currentTime}
+
+Auction Results:
+----------------
+Prized Subscriber: ${winner}
+Winning Discount: ₹1,00,000
+Prize Amount: ₹4,00,000
+Company Commission (5%): ₹25,000
+Dividend per Member: ₹7,500
+
+Bidding Summary:
+----------------
+Total Bids Received: 23
+Bidding Duration: 45 minutes
+Highest Bid: ₹1,00,000 (${winner})
+Second Highest: ₹95,000 (${subscribers[0]})
+Third Highest: ₹90,000 (${subscribers[4]})
+
+Member Participation:
+--------------------
+Present Members: 45
+Absent Members: 5
+Bidding Members: 23
+Non-bidding Members: 22
+
+Financial Breakdown:
+-------------------
+Chit Value: ₹5,00,000
+Less: Winning Discount: ₹1,00,000
+Less: Company Commission: ₹25,000
+Available for Dividend: ₹3,75,000
+Dividend per Member: ₹7,500
+
+Next Auction:
+-------------
+Month: 9 (November 2025)
+Scheduled Date: November 15, 2025
+Remaining Members: 49
+
+Audit Information:
+------------------
+Report Generated: ${currentDate} at ${currentTime}
+System: Live Auction PWA v1.0
+Generated By: Brindavan Chits Karimnagar
+Report ID: RPT-${Date.now()}
+
+This is a computer-generated report and does not require signature.
+For any queries, contact: info@brindavanchits.com
+
+=====================================
+End of Report
+  `.trim();
+}
+
+function generateCSVContent() {
+  const csvHeader = 'Member Name,Present Status,Bid Amount,Position,Notes';
+  const csvRows = [
+    `${winner},Present,₹1,00,000,1,Winner`,
+    `${subscribers[0]},Present,₹95,000,2,Second`,
+    `${subscribers[4]},Present,₹90,000,3,Third`,
+    `${subscribers[1]},Present,₹85,000,4,Participant`,
+    `${subscribers[2]},Present,₹80,000,5,Participant`,
+    `${subscribers[3]},Present,₹75,000,6,Participant`,
+    `${subscribers[5]},Present,₹70,000,7,Participant`,
+    `${subscribers[6]},Present,₹65,000,8,Participant`,
+    `${subscribers[7]},Present,₹60,000,9,Participant`,
+    `${subscribers[8]},Present,₹55,000,10,Participant`,
+    `${subscribers[9]},Present,₹50,000,11,Participant`,
+    `${subscribers[10]},Present,₹45,000,12,Participant`,
+    `${subscribers[11]},Present,₹40,000,13,Participant`,
+    `${subscribers[12]},Present,₹35,000,14,Participant`,
+    `${subscribers[13]},Present,₹30,000,15,Participant`,
+    `${subscribers[14]},Present,₹25,000,16,Participant`,
+    `${subscribers[15]},Present,₹20,000,17,Participant`,
+    `${subscribers[16]},Present,₹15,000,18,Participant`,
+    `${subscribers[17]},Present,₹10,000,19,Participant`,
+    `${subscribers[18]},Present,₹5,000,20,Participant`,
+    `${subscribers[19]},Present,No Bid,21,Observer`,
+    `${subscribers[20]},Present,No Bid,22,Observer`,
+    `${subscribers[21]},Present,No Bid,23,Observer`,
+    `${subscribers[22]},Absent,N/A,N/A,Absent`,
+    `${subscribers[23]},Absent,N/A,N/A,Absent`
+  ];
+  
+  return [csvHeader, ...csvRows].join('\n');
+}
+
+function generateJSONContent() {
+  const auditData = {
+    "auctionId": "CHT-KGN-500K-50M-8",
+    "timestamp": new Date().toISOString(),
+    "chitDetails": {
+      "chitId": "CHT-KGN-500K-50M",
+      "chitValue": 500000,
+      "totalMembers": 50,
+      "auctionMonth": 8,
+      "auctionDate": new Date().toISOString().split('T')[0]
+    },
+    "winner": {
+      "name": winner,
+      "discount": 100000,
+      "prizeAmount": 400000,
+      "bidTime": new Date().toISOString()
+    },
+    "biddingHistory": [
+      {"member": winner, "bid": 100000, "timestamp": new Date().toISOString()},
+      {"member": subscribers[0], "bid": 95000, "timestamp": new Date().toISOString()},
+      {"member": subscribers[4], "bid": 90000, "timestamp": new Date().toISOString()},
+      {"member": subscribers[1], "bid": 85000, "timestamp": new Date().toISOString()},
+      {"member": subscribers[2], "bid": 80000, "timestamp": new Date().toISOString()}
+    ],
+    "attendance": {
+      "present": 45,
+      "absent": 5,
+      "biddingMembers": 23,
+      "nonBiddingMembers": 22
+    },
+    "financials": {
+      "chitValue": 500000,
+      "winningDiscount": 100000,
+      "companyCommission": 25000,
+      "dividendAmount": 375000,
+      "dividendPerMember": 7500
+    },
+    "systemInfo": {
+      "version": "1.0",
+      "generatedBy": "Brindavan Chits Karimnagar",
+      "reportId": `RPT-${Date.now()}`
+    }
+  };
+  
+  return JSON.stringify(auditData, null, 2);
 }
 
 // Keyboard
@@ -546,6 +734,63 @@ setInterval(() => {
   const now = new Date();
   document.getElementById('statusTime').textContent = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
 }, 60000);
+
+// Countdown timer functionality
+let countdownTimers = {};
+
+function startCountdown(elementId, duration, callback) {
+  if (countdownTimers[elementId]) {
+    clearInterval(countdownTimers[elementId]);
+  }
+  
+  let timeLeft = duration;
+  const element = document.getElementById(elementId);
+  if (!element) return;
+  
+  const updateDisplay = () => {
+    element.textContent = timeLeft + 's';
+    if (timeLeft <= 0) {
+      clearInterval(countdownTimers[elementId]);
+      if (callback) callback();
+    }
+    timeLeft--;
+  };
+  
+  updateDisplay();
+  countdownTimers[elementId] = setInterval(updateDisplay, 1000);
+}
+
+// Start countdown when slide becomes active
+function startSlideCountdowns() {
+  const currentSlide = slides[currentSlideIndex];
+  
+  // F-05 - Start Auction Consent (60s)
+  if (currentSlide.id === 'F-05') {
+    startCountdown('consent-countdown-1', 60);
+    startCountdown('consent-timer-1', 60);
+  }
+  
+  // F-08 - Close Auction Consent (60s)
+  if (currentSlide.id === 'F-08') {
+    startCountdown('consent-countdown-2', 60);
+    startCountdown('consent-timer-2', 60);
+  }
+  
+  // S-05 - Timer/Inactivity Notice (60s)
+  if (currentSlide.id === 'S-05') {
+    startCountdown('inactivity-countdown', 60);
+  }
+  
+  // S-05A - Final Countdown (60s)
+  if (currentSlide.id === 'S-05A') {
+    startCountdown('final-countdown', 60);
+  }
+  
+  // F-09 - Auto-Accept Notice (45s)
+  if (currentSlide.id === 'F-09') {
+    startCountdown('auto-accept-countdown', 45);
+  }
+}
 
 renderSlides();
 </script>
