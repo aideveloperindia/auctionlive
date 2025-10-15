@@ -531,7 +531,11 @@ function changeSlide(direction) {
   if (currentSlideIndex < 0) currentSlideIndex = slides.length - 1;
   slideElements[currentSlideIndex].classList.add('active');
   document.getElementById('currentSlide').textContent = currentSlideIndex + 1;
-  startSlideCountdowns();
+  
+  // Start countdowns immediately when slide changes
+  setTimeout(() => {
+    startSlideCountdowns();
+  }, 50);
 }
 
 function downloadFile(filename) {
@@ -770,6 +774,7 @@ function startCountdown(elementId, duration, callback) {
 // Start countdown when slide becomes active
 function startSlideCountdowns() {
   const currentSlide = slides[currentSlideIndex];
+  console.log('Starting countdowns for slide:', currentSlide.id, 'at index:', currentSlideIndex);
   
   // Clear any existing timers first
   Object.keys(countdownTimers).forEach(timerId => {
@@ -779,6 +784,7 @@ function startSlideCountdowns() {
   
   // F-05 - Start Auction Consent (60s)
   if (currentSlide.id === 'F-05') {
+    console.log('Starting F-05 countdowns');
     setTimeout(() => {
       startCountdown('consent-countdown-1', 60);
       startCountdown('consent-timer-1', 60);
@@ -787,6 +793,7 @@ function startSlideCountdowns() {
   
   // F-08 - Close Auction Consent (60s)
   if (currentSlide.id === 'F-08') {
+    console.log('Starting F-08 countdowns');
     setTimeout(() => {
       startCountdown('consent-countdown-2', 60);
       startCountdown('consent-timer-2', 60);
@@ -795,6 +802,7 @@ function startSlideCountdowns() {
   
   // S-05 - Timer/Inactivity Notice (60s)
   if (currentSlide.id === 'S-05') {
+    console.log('Starting S-05 countdown');
     setTimeout(() => {
       startCountdown('inactivity-countdown', 60);
     }, 100);
@@ -802,6 +810,7 @@ function startSlideCountdowns() {
   
   // S-05A - Final Countdown (60s)
   if (currentSlide.id === 'S-05A') {
+    console.log('Starting S-05A countdown');
     setTimeout(() => {
       startCountdown('final-countdown', 60);
     }, 100);
@@ -809,6 +818,7 @@ function startSlideCountdowns() {
   
   // F-09 - Auto-Accept Notice (45s)
   if (currentSlide.id === 'F-09') {
+    console.log('Starting F-09 countdown');
     setTimeout(() => {
       startCountdown('auto-accept-countdown', 45);
     }, 100);
@@ -816,6 +826,11 @@ function startSlideCountdowns() {
 }
 
 renderSlides();
+
+// Start countdowns on page load if needed
+setTimeout(() => {
+  startSlideCountdowns();
+}, 500);
 </script>
 
 </body>
