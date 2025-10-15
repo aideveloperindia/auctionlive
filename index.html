@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Live Chit Auction PWA - Brindavan Chits Karimnagar</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+.device-frame { width: 375px; height: 812px; background: #000; border-radius: 40px; padding: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
+.device-notch { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 200px; height: 30px; background: #000; border-radius: 0 0 20px 20px; z-index: 1000; }
+.status-bar { position: absolute; top: 0; left: 0; right: 0; height: 44px; background: linear-gradient(to bottom, rgba(0,0,0,0.1), transparent); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 12px; color: #fff; z-index: 999; }
+.slideshow-container { width: 100%; height: 100%; position: relative; background: #fff; border-radius: 32px; overflow: hidden; }
+.slide { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; overflow-y: auto; animation: fadeIn 0.5s ease-in-out; }
+.slide.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+.slide-header { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 50px 20px 30px; color: #fff; text-align: center; }
+.slide-header.gold { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
+.slide-header h1 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.slide-header .subtitle { font-size: 13px; opacity: 0.9; }
+.slide-content { padding: 20px; }
+.card { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.btn { width: 100%; min-height: 48px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; font-family: inherit; }
+.btn-primary { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #fff; margin-bottom: 12px; }
+.btn-secondary { background: #f0f0f0; color: #333; }
+.btn:active { transform: scale(0.98); }
+.input-field { width: 100%; padding: 14px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; margin-bottom: 12px; font-family: inherit; }
+.input-field:focus { outline: none; border-color: #4facfe; }
+.badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin: 4px; }
+.badge.green { background: #d4edda; color: #155724; }
+.badge.red { background: #f8d7da; color: #721c24; }
+.badge.yellow { background: #fff3cd; color: #856404; }
+.badge.grey { background: #e2e3e5; color: #383d41; }
+.leaderboard-item { display: flex; align-items: center; padding: 14px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px; }
+.leaderboard-item.top { background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+.leaderboard-position { width: 32px; height: 32px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 12px; }
+.leaderboard-info { flex: 1; }
+.leaderboard-name { font-weight: 600; font-size: 15px; }
+.leaderboard-amount { font-size: 13px; color: #666; }
+.countdown-circle { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 32px; font-weight: 700; margin: 20px auto; animation: countdown-pulse 1s infinite; }
+@keyframes countdown-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); } 50% { box-shadow: 0 0 0 15px rgba(102, 126, 234, 0); } }
+.progress-bar { width: 100%; height: 8px; background: #e0e0e0; border-radius: 10px; overflow: hidden; margin: 16px 0; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); transition: width 0.3s ease; }
+.nav-arrow { position: fixed; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; color: #333; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s; z-index: 1500; }
+.nav-arrow:hover { background: #fff; transform: translateY(-50%) scale(1.1); }
+.nav-arrow.left { left: 40px; }
+.nav-arrow.right { right: 40px; }
+.slide-counter { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 13px; z-index: 1500; }
+.attendance-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.attendance-item { padding: 10px; background: #f8f9fa; border-radius: 8px; text-align: center; font-size: 13px; }
+.attendance-item.present { background: #d4edda; color: #155724; }
+.attendance-item.absent { background: #f8d7da; color: #721c24; }
+.chit-card { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #4facfe; }
+.chit-card.upcoming { border-left-color: #ffd200; }
+.chit-card.closed { border-left-color: #6c757d; }
+.timeline-event { padding: 12px; background: #f8f9fa; border-left: 3px solid #4facfe; margin-bottom: 10px; border-radius: 4px; }
+.timeline-time { font-size: 11px; color: #666; margin-bottom: 4px; }
+.timeline-desc { font-size: 13px; color: #333; }
+.info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e0e0e0; }
+.info-row:last-child { border-bottom: none; }
+.info-label { font-size: 13px; color: #666; }
+.info-value { font-size: 14px; font-weight: 600; color: #333; }
+.pie-chart { width: 200px; height: 200px; border-radius: 50%; background: conic-gradient(#4facfe 0% 80%, #ffd200 80% 85%, #6c757d 85% 100%); margin: 20px auto; }
+.download-file { display: flex; align-items: center; justify-content: space-between; padding: 14px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px; }
+.file-info { flex: 1; }
+.file-name { font-size: 14px; font-weight: 600; color: #333; }
+.file-size { font-size: 12px; color: #666; }
+.download-btn { padding: 8px 16px; background: #4facfe; color: #fff; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; }
+.logo { width: 60px; height: 60px; background: #fff; border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #4facfe; }
+.rule-item { padding: 12px; background: #f8f9fa; border-radius: 8px; margin-bottom: 10px; font-size: 13px; line-height: 1.5; }
+.delivery-log-item { display: flex; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px; font-size: 13px; }
+.delivery-status { margin-left: auto; color: #28a745; font-weight: 600; }
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 8px; }
+select.input-field { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px; }
+@keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
+@media (max-width: 480px) { .device-frame { width: 100%; height: 100vh; border-radius: 0; padding: 0; } .nav-arrow { display: none; } }
+</style>
+</head>
+<body>
+
+<div class="nav-arrow left" onclick="changeSlide(-1)">‹</div>
+<div class="nav-arrow right" onclick="changeSlide(1)">›</div>
+<div class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">36</span></div>
+
+<div class="device-frame">
+  <div class="device-notch"></div>
+  <div class="status-bar">
+    <span>⚡ LTE</span>
+    <span id="statusTime">9:31</span>
+    <span>🔋 78%</span>
+  </div>
+  
+  <div class="slideshow-container" id="slideshowContainer"></div>
+</div>
+
+<script>
+const subscribers = ["Arjun","Karthik","Ravi","Vamsi","Teja","Sai","Naveen","Prasad","Harish","Anil","Mahesh","Raghav","Lokesh","Srikanth","Vinay","Ajay","Chaitanya","Surya","Manish","Abhinav","Varun","Deepak","Nikhil","Sandeep","Bharat","Lakshmi","Sangeetha","Anjali","Priya","Swathi","Sunitha","Kavya","Deepthi","Sneha","Divya","Jyothi","Manjula","Padma","Archana","Hema","Shilpa","Sruthi","Madhavi","Nandini","Tejaswini","Haritha","Sandhya","Meena","Pooja","Swarna"];
+const presentMembers = ["Arjun","Karthik","Ravi","Teja","Sai","Prasad","Harish","Anil","Mahesh","Raghav","Lokesh","Srikanth","Vinay"];
+const absentMembers = subscribers.filter(s => !presentMembers.includes(s));
+const winner = subscribers[2]; // RAVI - ONLY WINNER
+
+// 🧭 REORDERED COMPLETE FLOW FOR BRINDAVAN CHITS LIVE AUCTION PWA
+// Instruction to Cursor: Only reorder slides in correct flow. Do NOT change text, content, placeholders, or styling.
+
+const slides = [
+  // 1. LOGO - Company Introduction (FIRST SCREEN)
+  { id: "LOGO", title: "Live Auction App", role: "System", content: `
+    <div style="text-align:center; padding:40px 20px; min-height:100vh; display:flex; flex-direction:column; justify-content:center;">
+      <img src="LOGO.png" alt="Company Logo" style="max-width:100%; max-height:300px; width:auto; height:auto; margin:0 auto 40px; display:block;">
+      <p style="font-size:18px; color:#666; margin-bottom:32px; line-height:1.6;">Digital Chit Fund Auction Platform</p>
+      <button class="btn btn-primary" style="margin-top:32px; padding:16px 32px; font-size:18px;">Get Started</button>
+    </div>
+  `},
+  
+  // 2. F-01 - Login (SWAPPED FROM POSITION 3)
+  { id: "F-01", title: "Company Login", role: "Foreman", content: `
+    <h2 style="text-align:center; margin-bottom:12px;">Welcome</h2>
+    <p style="text-align:center; color:#666; margin-bottom:32px; font-size:14px;">Access your dashboard and manage auctions</p>
+    <input type="text" class="input-field" placeholder="Username" value="foreman@brindavan">
+    <input type="password" class="input-field" placeholder="Password" value="••••••••">
+    <button class="btn btn-primary">Login</button><button class="btn btn-secondary">Forgot Password?</button>
+  `},
+  
+  // 3. F-15 - Closed Archive (SWAPPED FROM POSITION 2)
+  { id: "F-15", title: "Closed Chits Archive", role: "Foreman", content: `
+    <h2 style="margin-bottom:24px;">Closed Chits</h2>
+    <div style="margin-bottom:20px;"><input type="text" class="input-field" placeholder="🔍 Search..."></div>
+    <div class="chit-card closed"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><span style="font-weight:600;">CHT-KGN-500K-50M</span><span class="badge grey">Completed</span></div><div style="font-size:13px; color:#666; margin-bottom:8px;">Completed: Sep 2025<br>Winner: ${winner}</div><button class="btn btn-secondary">View Report</button></div>
+    <div class="chit-card closed"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><span style="font-weight:600;">CHT-NZB-1000K-100M</span><span class="badge grey">Completed</span></div><div style="font-size:13px; color:#666; margin-bottom:8px;">Completed: Aug 2025<br>Winner: ${subscribers[26]}</div><button class="btn btn-secondary">View Report</button></div>
+    <button class="btn btn-secondary" style="margin-top:16px;">Load More...</button>
+  `},
+  
+  // 2. F-00B - Create Chit
+  { id: "F-00B", title: "Create New Chit", role: "Foreman", content: `
+    <h2 style="margin-bottom:24px;">Create New Chit</h2>
+    <div class="form-group"><label class="form-label">Chit Value (₹)</label><input type="number" class="input-field" value="500000"></div>
+    <div class="form-group"><label class="form-label">Total Months</label><input type="number" class="input-field" value="50"></div>
+    <div class="form-group"><label class="form-label">Monthly Subscription (₹)</label><input type="number" class="input-field" value="10000"></div>
+    <div class="form-group"><label class="form-label">Commission (%)</label><input type="number" class="input-field" value="5"></div>
+    <div class="form-group"><label class="form-label">Start Date</label><input type="date" class="input-field" value="2025-01-01"></div>
+    <button class="btn btn-primary">Save Chit</button><button class="btn btn-secondary">Cancel</button>
+  `},
+  
+  // 3. F-02 - Select Chit & Month
+  { id: "F-02", title: "Select Chit & Month", role: "Foreman", content: `
+    <h2 style="margin-bottom:24px;">Select Chit & Period</h2>
+    <div class="card"><div class="info-row"><span class="info-label">Chit Value</span><span class="info-value">₹5,00,000</span></div><div class="info-row"><span class="info-label">Duration</span><span class="info-value">50 Months</span></div><div class="info-row"><span class="info-label">Commission (5%)</span><span class="info-value">₹25,000</span></div></div>
+    <div class="form-group"><label class="form-label">Select Month</label><select class="input-field">${Array.from({length: 50}, (_, i) => `<option value="${i+1}" ${i === 7 ? 'selected' : ''}>Month ${i+1}</option>`).join('')}</select></div>
+    <button class="btn btn-primary">Generate Auction Link</button>
+  `},
+  
+  // 4. F-03 - Generate Link
+  { id: "F-03", title: "Auction Link Generated", role: "Foreman", content: `
+    <h2 style="margin-bottom:24px;">Auction Link Generated</h2>
+    <div class="card" style="background:#f0f8ff; border:2px solid #4facfe;"><div style="font-size:13px; color:#666; margin-bottom:8px;">Auction Link</div><div style="font-size:12px; word-break:break-all; color:#4facfe; font-weight:600; margin-bottom:16px;">https://demo.brindavanchits.in/auction/CHT-KGN-500K-50M/8</div><button class="btn btn-primary">📋 Copy Link</button></div>
+    <h3 style="margin:24px 0 16px; font-size:16px;">Delivery Status</h3>
+    ${subscribers.slice(0, 8).map((name, i) => `<div class="delivery-log-item"><span>${name}</span><span class="delivery-status">✓ Delivered 09:0${i}</span></div>`).join('')}
+    <button class="btn btn-secondary" style="margin-top:12px;">Simulate WhatsApp Send</button>
+  `},
+  
+  // 5. F-00 - Dashboard (MOVED FROM POSITION 2)
+  { id: "F-00", title: "Company Dashboard", role: "Foreman", content: `
+    <h2 style="text-align:center; margin-bottom:24px;">Brindavan Chits Karimnagar</h2>
+    <div class="chit-card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><span style="font-weight:600;">CHT-KGN-500K-50M</span><span class="badge green">Active</span></div><div style="font-size:13px; color:#666; margin-bottom:12px;">Month 8 of 50 • ₹5,00,000</div><button class="btn btn-primary">View Auction</button></div>
+    <div class="chit-card upcoming"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><span style="font-weight:600;">CHT-WGL-300K-30M</span><span class="badge yellow">Upcoming</span></div><div style="font-size:13px; color:#666; margin-bottom:12px;">Month 5 of 30 • ₹3,00,000</div><button class="btn btn-secondary">Preview</button></div>
+    <div class="chit-card closed"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><span style="font-weight:600;">CHT-NZB-1000K-100M</span><span class="badge grey">Closed</span></div><div style="font-size:13px; color:#666; margin-bottom:12px;">Completed • ₹10,00,000</div><button class="btn btn-secondary">Reports</button></div>
+    <button class="btn btn-primary" style="margin-top:12px;">+ Create New Chit</button>
+  `},
+  
+  // 6. F-05 - Consent to Start
+  { id: "F-05", title: "Start Auction Consent", role: "Foreman", content: `
+    <h2 style="text-align:center; margin-bottom:16px;">Start Auction Consent</h2>
+    <div class="countdown-circle">60s</div>
+    <div class="card"><div class="info-row"><span class="info-label">Present</span><span class="info-value" style="color:#28a745;">${presentMembers.length}</span></div><div class="info-row"><span class="info-label">Absent</span><span class="info-value" style="color:#dc3545;">${absentMembers.length}</span></div></div>
+    <div style="background:#fff3cd; padding:16px; border-radius:10px; margin:20px 0; font-size:13px; text-align:center;">⚠️ All present must click 'Agree'<br>Auto-accept in 60s</div>
+    <button class="btn btn-primary">✓ Agree</button><button class="btn btn-secondary">✗ Decline</button>
+  `},
+  
+  // 7. S-00 - My Chits
+  { id: "S-00", title: "My Chits Overview", role: "Subscriber", content: `
+    <h2 style="margin-bottom:8px;">My Chits</h2>
+    <p style="font-size:14px; color:#666; margin-bottom:24px;">Welcome, ${subscribers[0]}</p>
+    <div class="chit-card" style="border-left-color:#28a745;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><span style="font-weight:600;">CHT-KGN-500K-50M</span><span class="badge green">🔴 Live</span></div><div style="font-size:13px; color:#666; margin-bottom:12px;">Month 8 Auction in Progress</div><button class="btn btn-primary">Join Now</button></div>
+    <div class="chit-card upcoming"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><span style="font-weight:600;">CHT-WGL-300K-30M</span><span class="badge yellow">Upcoming</span></div><div style="font-size:13px; color:#666; margin-bottom:12px;">Next: Nov 20, 2025</div><button class="btn btn-secondary">🔔 Reminder</button></div>
+  `},
+  
+  // 8. S-01 - Subscriber Login
+  { id: "S-01", title: "Join Auction", role: "Subscriber", content: `
+    <h2 style="text-align:center; margin-bottom:8px;">Join Auction — Month 8</h2>
+    <p style="text-align:center; font-size:13px; color:#666; margin-bottom:32px;">You are logged in as <strong>${subscribers[0]}</strong></p>
+    <div class="card"><div class="info-row"><span class="info-label">Chit Value</span><span class="info-value">₹5,00,000</span></div><div class="info-row"><span class="info-label">Monthly</span><span class="info-value">₹10,000</span></div><div class="info-row"><span class="info-label">Chit ID</span><span class="info-value">CHT-KGN-500K-50M</span></div></div>
+    <button class="btn btn-primary">✓ Mark Present & Join</button><button class="btn btn-secondary">📖 View Rules</button>
+  `},
+  
+  // 9. S-02 - Rules
+  { id: "S-02", title: "Auction Rules", role: "Subscriber", content: `
+    <h2 style="margin-bottom:24px;">Auction Rules</h2>
+    <p style="font-size:13px; color:#666; margin-bottom:20px;">Please read carefully</p>
+    <div class="rule-item"><strong>1.</strong> Bids are discount amounts from chit value.</div>
+    <div class="rule-item"><strong>2.</strong> Highest discount wins as Prized Subscriber.</div>
+    <div class="rule-item"><strong>3.</strong> Brindavan Chits commission = 5% (₹25,000).</div>
+    <div class="rule-item"><strong>4.</strong> Discount minus commission distributed as dividend.</div>
+    <div class="rule-item"><strong>5.</strong> Inactivity auto-accepts consent after 60s.</div>
+    <div class="rule-item"><strong>6.</strong> One bid per 10-second interval.</div>
+    <button class="btn btn-primary" style="margin-top:24px;">✓ I Understand</button>
+  `},
+  
+  // 10. F-04 - Attendance (MOVED FROM POSITION 6)
+  { id: "F-04", title: "Attendance Dashboard", role: "Foreman", content: `
+    <h2 style="margin-bottom:16px;">Attendance — Month 8</h2>
+    <p style="font-size:13px; color:#666; margin-bottom:24px;">Mark subscribers as Present or Absent</p>
+    <div style="margin-bottom:20px;"><h3 style="font-size:14px; margin-bottom:12px; color:#155724;">✓ Present (${presentMembers.length})</h3><div class="attendance-grid">${presentMembers.map(name => `<div class="attendance-item present">${name}</div>`).join('')}</div></div>
+    <div><h3 style="font-size:14px; margin-bottom:12px; color:#721c24;">✗ Absent (${absentMembers.length})</h3><div class="attendance-grid">${absentMembers.slice(0, 10).map(name => `<div class="attendance-item absent">${name}</div>`).join('')}<div class="attendance-item absent" style="grid-column: span 2; font-size:12px;">+${absentMembers.length - 10} more...</div></div></div>
+    <button class="btn btn-primary" style="margin-top:24px;">Continue to Auction</button>
+  `},
+  
+  // 11. SELFIE-1 - Compliance Selfie (AFTER ATTENDANCE)
+  { id: "SELFIE-1", title: "Compliance Selfie", role: "System", content: `
+    <div style="text-align:center; padding:40px 20px;">
+      <div style="width:120px; height:120px; border-radius:50%; background:linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); margin:0 auto 24px; display:flex; align-items:center; justify-content:center; font-size:60px;">📸</div>
+      <h2 style="margin-bottom:16px;">Security Compliance</h2>
+      <p style="font-size:14px; color:#666; margin-bottom:24px; line-height:1.5;">For security and compliance records, all present members must take a selfie to verify their identity and participation.</p>
+      <div style="background:#f0f8ff; padding:16px; border-radius:12px; margin:20px 0;">
+        <h3 style="font-size:16px; margin-bottom:12px; color:#4facfe;">📋 Compliance Requirements</h3>
+        <ul style="text-align:left; font-size:13px; color:#666; line-height:1.6;">
+          <li>Clear face visibility</li>
+          <li>Good lighting conditions</li>
+          <li>No masks or face coverings</li>
+          <li>Selfie will be stored securely</li>
+        </ul>
+      </div>
+      <button class="btn btn-primary" style="margin-top:20px;">📸 Take Selfie</button>
+      <button class="btn btn-secondary">Skip (Not Recommended)</button>
+    </div>
+  `},
+  
+  // 11. S-03A - Live Bidding Room Opening
+  { id: "S-03A", title: "Live Bidding Room - Opening", role: "Subscriber", content: `
+    <h2 style="text-align:center; margin-bottom:16px;">Chit Auction Live — Month 8</h2>
+    <div class="countdown-circle">60s</div>
+    <div class="card"><div class="info-row"><span class="info-label">Chit ID</span><span class="info-value">CHT-KGN-500K-50M</span></div><div class="info-row"><span class="info-label">Value</span><span class="info-value">₹5,00,000</span></div><div class="info-row"><span class="info-label">Starting Discount</span><span class="info-value">₹50,000</span></div></div>
+    <h3 style="font-size:14px; margin:20px 0 12px;">Active Subscribers (${presentMembers.length})</h3>
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;">${presentMembers.slice(0, 8).map(name => `<span class="badge green">🟢 ${name}</span>`).join('')}</div>
+    <div class="form-group"><label class="form-label">Enter Discount (₹)</label><input type="number" class="input-field" placeholder="Enter discount"></div>
+    <button class="btn btn-primary">Submit Bid</button>
+    <div style="font-size:12px; color:#666; text-align:center; margin-top:12px;">⏱️ One bid per 10s interval</div>
+  `},
+  
+  // 12. S-03B - Real-time Bids (MOVED FROM POSITION 16) - LOWER BIDS FIRST
+  { id: "S-03B", title: "Real-Time Bids", role: "Subscriber", content: `
+    <h2 style="margin-bottom:16px;">Live Auction Progress</h2>
+    <p style="font-size:13px; color:#666; margin-bottom:20px;">Auto-refresh every 5 seconds</p>
+    <div class="card" style="background:#ffeaa7; text-align:center; padding:16px;"><div style="font-size:14px; margin-bottom:8px;">Current Highest</div><div style="font-size:28px; font-weight:700; color:#d63031;">₹75,000</div><div style="font-size:14px; margin-top:8px;">by ${subscribers[1]}</div></div>
+    <h3 style="font-size:14px; margin:20px 0 12px;">All Bids (Sorted)</h3>
+    ${[{name: subscribers[1], discount: 75000},{name: subscribers[0], discount: 80000},{name: subscribers[3], discount: 85000},{name: subscribers[4], discount: 90000}].map((bid, i) => `<div class="leaderboard-item ${i === 3 ? 'top' : ''}"><div class="leaderboard-position">${i + 1}</div><div class="leaderboard-info"><div class="leaderboard-name">${bid.name}</div><div class="leaderboard-amount">₹${bid.discount.toLocaleString('en-IN')}</div></div></div>`).join('')}
+    <button class="btn btn-primary" style="margin-top:16px;">Place Higher Bid</button>
+  `},
+  
+  // 13. S-03 - Enter Bid (SWAPPED FROM POSITION 13) - HIGHER BID
+  { id: "S-03", title: "Enter Discount Bid", role: "Subscriber", content: `
+    <h2 style="margin-bottom:16px;">Enter Your Discount Bid</h2>
+    <div class="card" style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; text-align:center;"><div style="font-size:13px; opacity:0.9; margin-bottom:8px;">Current Top</div><div style="font-size:32px; font-weight:700; margin-bottom:8px;">₹90,000</div><div style="font-size:14px; opacity:0.9;">by ${subscribers[4]}</div></div>
+    <div class="form-group"><label class="form-label">Your Discount (₹)</label><input type="number" class="input-field" value="95000"><div style="font-size:12px; color:#666; margin-top:4px;">Higher discount = Better chance</div></div>
+    <div class="card" style="background:#f0f8ff;"><div style="font-size:13px; color:#666; margin-bottom:8px;">Your Take-home</div><div style="font-size:24px; font-weight:700; color:#4facfe;">₹4,05,000</div></div>
+    <button class="btn btn-primary">Submit Bid</button>
+  `},
+  
+  // 14. S-03C - Bid Submission (MOVED FROM POSITION 14)
+  { id: "S-03C", title: "Bid Submission Popup", role: "Subscriber", content: `
+    <div style="padding:40px 0; text-align:center;">
+      <div style="width:80px; height:80px; background:linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius:50%; margin:0 auto 24px; display:flex; align-items:center; justify-content:center; font-size:40px;">✓</div>
+      <h2 style="margin-bottom:16px;">Confirm Bid</h2>
+      <p style="font-size:14px; color:#666; margin-bottom:32px;">You are submitting</p>
+      <div style="font-size:36px; font-weight:700; color:#4facfe; margin-bottom:8px;">₹80,000</div>
+      <div style="font-size:14px; color:#666; margin-bottom:32px;">Take-home: ₹4,20,000</div>
+      <button class="btn btn-primary">✓ Confirm</button><button class="btn btn-secondary">Cancel</button>
+    </div>
+  `},
+  
+  // 15. F-06A - Company's Live Bid Monitor (SWAPPED FROM POSITION 12) - UPDATED BIDS
+  { id: "F-06A", title: "Company Live Monitor", role: "Foreman", content: `
+    <h2 style="margin-bottom:16px;">Live Bidding Dashboard</h2>
+    <p style="font-size:13px; color:#666; margin-bottom:20px;">Monitor bids and manage auction</p>
+    <div class="card" style="background:#f0f8ff; border:2px solid #4facfe;"><div style="text-align:center;"><div style="font-size:14px; color:#666; margin-bottom:8px;">Current Leader</div><div style="font-size:24px; font-weight:700; color:#4facfe;">${subscribers[0]}</div><div style="font-size:18px; margin-top:8px;">₹95,000</div></div></div>
+    <h3 style="font-size:14px; margin:20px 0 12px;">All Bids</h3>
+    ${[{name: subscribers[0], discount: 95000, time: "09:30:28"},{name: subscribers[4], discount: 90000, time: "09:30:45"},{name: subscribers[3], discount: 85000, time: "09:30:50"}].map((bid, i) => `<div class="timeline-event"><div class="timeline-time">${bid.time}</div><div class="timeline-desc"><strong>${bid.name}</strong> bid ₹${bid.discount.toLocaleString('en-IN')}</div></div>`).join('')}
+    <div style="background:#fff3cd; padding:12px; border-radius:8px; margin:16px 0; font-size:12px; color:#856404;">
+      <strong>Legal Note:</strong> Pause/End controls are for technical issues only. As per Chit Funds Act, foreman must ensure fair, transparent auction process. Any pause/end must be documented and justified.
+    </div>
+    <button class="btn btn-primary" style="margin-top:16px;">⏸️ Pause</button><button class="btn btn-secondary">🛑 End</button>
+  `},
+  
+  // 16. S-04 - Bid Confirmed
+  { id: "S-04", title: "Bid Confirmed", role: "Subscriber", content: `
+    <div style="padding:40px 0; text-align:center;">
+      <div style="width:100px; height:100px; border-radius:50%; background:linear-gradient(135deg, #00b09b, #96c93d); margin:0 auto 24px; display:flex; align-items:center; justify-content:center; font-size:50px; animation:scaleIn 0.5s;">✓</div>
+      <h2 style="margin-bottom:16px;">Bid Submitted!</h2>
+      <div class="card" style="margin:24px 0;"><div class="info-row"><span class="info-label">Discount</span><span class="info-value">₹95,000</span></div><div class="info-row"><span class="info-label">Take-home</span><span class="info-value">₹4,05,000</span></div></div>
+      <p style="font-size:13px; color:#666; margin-bottom:24px;">Your bid is in the queue. Check leaderboard for updates.</p>
+      <button class="btn btn-primary">View Leaderboard</button>
+    </div>
+  `},
+  
+  // 17. S-05 - Inactivity Alert (RAVI'S FINAL WINNING BID)
+  { id: "S-05", title: "Inactivity Alert", role: "Subscriber", content: `
+    <h2 style="text-align:center; margin-bottom:16px;">⚠️ Inactivity Alert</h2>
+    <div class="countdown-circle">60s</div>
+    <p style="text-align:center; font-size:14px; color:#666; margin-bottom:24px;">No new bid for 60s<br>Auction may close soon</p>
+    <div class="progress-bar" style="margin:24px 0;"><div class="progress-fill" style="width:40%; background:linear-gradient(90deg, #ff6b6b 0%, #ee5a6f 100%);"></div></div>
+    <div class="card"><div style="font-size:14px; color:#666; margin-bottom:8px;">Current Top</div><div style="font-size:24px; font-weight:700; color:#4facfe; margin-bottom:8px;">₹1,00,000</div><div style="font-size:13px; color:#666;">by ${winner}</div></div>
+    <button class="btn btn-primary">Place New Bid</button><button class="btn btn-secondary">Wait</button>
+  `},
+  
+  // 18. F-06 - Live Leaderboard (RAVI TOP)
+  { id: "F-06", title: "Live Leaderboard", role: "Foreman", content: `
+    <h2 style="text-align:center; margin-bottom:16px;">Top 3 Bidders</h2>
+    <p style="text-align:center; font-size:13px; color:#666; margin-bottom:24px;">Auto-refresh every 5s</p>
+    ${[{pos: 1, name: winner, discount: 100000, takeHome: 400000},{pos: 2, name: subscribers[3], discount: 95000, takeHome: 405000},{pos: 3, name: subscribers[4], discount: 92000, takeHome: 408000}].map(bid => `<div class="leaderboard-item ${bid.pos === 1 ? 'top' : ''}"><div class="leaderboard-position" style="${bid.pos === 1 ? 'background:#ffd700; color:#000;' : ''}">${bid.pos === 1 ? '👑' : bid.pos}</div><div class="leaderboard-info"><div class="leaderboard-name">${bid.name}</div><div class="leaderboard-amount">₹${bid.discount.toLocaleString('en-IN')} | Take-home: ₹${bid.takeHome.toLocaleString('en-IN')}</div></div></div>`).join('')}
+    <div class="progress-bar" style="margin:24px 0;"><div class="progress-fill" style="width:65%;"></div></div>
+    <div style="text-align:center; font-size:13px; color:#666;">⏱️ Auction in progress...</div>
+  `},
+  
+  // 19. S-05A - Final Countdown (RAVI TOP)
+  { id: "S-05A", title: "Final Countdown", role: "Subscriber", content: `
+    <h2 style="text-align:center; margin-bottom:16px; color:#dc3545;">🔥 Final 60 Seconds!</h2>
+    <p style="text-align:center; font-size:14px; margin-bottom:24px;">Last call for bids</p>
+    <div style="width:200px; height:200px; border-radius:50%; background:conic-gradient(#dc3545 0% 60%, #e0e0e0 60% 100%); margin:20px auto; display:flex; align-items:center; justify-content:center;"><div style="width:160px; height:160px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; flex-direction:column;"><div style="font-size:42px; font-weight:700; color:#dc3545;">36</div><div style="font-size:13px; color:#666;">seconds</div></div></div>
+    <div class="card"><div style="text-align:center;"><div style="font-size:13px; color:#666; margin-bottom:8px;">No higher bid yet</div><div style="font-size:20px; font-weight:700; color:#4facfe; margin-bottom:4px;">₹1,00,000</div><div style="font-size:14px; color:#666;">by ${winner}</div></div></div>
+    <div style="background:#fff3cd; padding:16px; border-radius:10px; margin:20px 0; font-size:13px; text-align:center;">⏰ If no bid in 60s, enters close consent</div>
+    <button class="btn btn-primary">🚀 Place Bid</button><button class="btn btn-secondary">⏳ Wait</button>
+  `},
+  
+  // 20. F-08 - Consent to Close (RAVI)
+  { id: "F-08", title: "Close Confirmation", role: "Foreman", content: `
+    <h2 style="text-align:center; margin-bottom:16px;">Close Auction?</h2>
+    <div class="countdown-circle">45s</div>
+    <div class="card" style="background:#ffeaa7;"><div style="text-align:center;"><div style="font-size:14px; margin-bottom:8px;">Prized Subscriber</div><div style="font-size:24px; font-weight:700; margin-bottom:8px;">${winner}</div><div style="font-size:16px; color:#666;">Discount: ₹1,00,000</div></div></div>
+    <div style="background:#d1ecf1; padding:16px; border-radius:10px; margin:20px 0; font-size:13px; text-align:center;">ℹ️ All must consent<br>Auto-accept after 45s</div>
+    <button class="btn btn-primary">✓ Agree</button><button class="btn btn-secondary">⚠️ Dispute</button>
+  `},
+  
+  // 21. F-09 - Auto-Accept
+  { id: "F-09", title: "Auto-Accept Notice", role: "Foreman", content: `
+    <h2 style="margin-bottom:24px;">Auto-Consent Activated</h2>
+    <div style="text-align:center; margin:32px 0;"><div style="width:100px; height:100px; border-radius:50%; background:#ffc107; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:50px;">⏰</div><div style="font-size:32px; font-weight:700; margin:16px 0;">5s</div><p style="font-size:14px; color:#666;">Closing...</p></div>
+    <div style="background:#fff3cd; padding:16px; border-radius:10px; margin-bottom:20px;"><div style="font-size:14px; font-weight:600; margin-bottom:12px;">Auto-Accepted:</div><div style="display:flex; flex-wrap:wrap; gap:8px;">${[subscribers[12], subscribers[13], subscribers[14]].map(name => `<span class="badge yellow">${name}</span>`).join('')}</div></div>
+    <p style="font-size:13px; color:#666; text-align:center; margin-bottom:24px;">Non-response treated as AGREE</p>
+    <button class="btn btn-primary">Continue</button>
+  `},
+  
+  // 22. F-10 - Auction Closed (RAVI)
+  { id: "F-10", title: "Auction Closed", role: "Foreman", content: `
+    <div style="text-align:center; padding:20px 0;">
+      <div style="font-size:60px; margin-bottom:16px;">✅</div>
+      <h2 style="margin-bottom:8px;">Auction Closed</h2>
+      <p style="font-size:14px; color:#666; margin-bottom:32px;">Month 8 • CHT-KGN-500K-50M</p>
+      <div class="card" style="background:linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);"><div style="text-align:center;"><div style="font-size:14px; margin-bottom:8px; opacity:0.8;">🏆 Prized Subscriber</div><div style="font-size:28px; font-weight:700; margin-bottom:12px;">${winner}</div><div style="display:flex; justify-content:space-around; margin-top:16px;"><div><div style="font-size:12px; opacity:0.8;">Discount</div><div style="font-size:18px; font-weight:600;">₹1,00,000</div></div><div><div style="font-size:12px; opacity:0.8;">Take-home</div><div style="font-size:18px; font-weight:600;">₹4,00,000</div></div></div></div></div>
+      <button class="btn btn-primary" style="margin-top:20px;">📊 View Report</button>
+      <button class="btn btn-secondary">📄 Export PDF</button>
+    </div>
+  `},
+  
+  // 23. S-05B - Auction Complete (RAVI ONLY!)
+  { id: "S-05B", title: "Auction Complete", role: "Subscriber", content: `
+    <div style="text-align:center; padding:20px 0;">
+      <div style="font-size:80px; margin-bottom:16px;">🎉</div>
+      <h2 style="margin-bottom:8px;">Auction Complete!</h2>
+      <p style="font-size:14px; color:#666; margin-bottom:32px;">Prized Subscriber Announced</p>
+      <div style="width:100px; height:100px; border-radius:50%; background:linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); margin:0 auto 16px; display:flex; align-items:center; justify-content:center; font-size:50px; font-weight:700; box-shadow:0 8px 20px rgba(255,215,0,0.4);">👑</div>
+      <div style="font-size:28px; font-weight:700; margin-bottom:8px;">${winner}</div>
+      <div class="card"><div class="info-row"><span class="info-label">Discount</span><span class="info-value">₹1,00,000</span></div><div class="info-row"><span class="info-label">Take-home</span><span class="info-value" style="color:#28a745;">₹4,00,000</span></div></div>
+      <button class="btn btn-primary" style="margin-top:20px;">📊 View Summary</button>
+    </div>
+  `},
+  
+  // 24. S-06 - Final Leaderboard (RAVI)
+  { id: "S-06", title: "Final Results", role: "Subscriber", content: `
+    <div style="text-align:center; padding:20px 0;"><div style="font-size:60px; margin-bottom:16px;">🎊</div><h2 style="margin-bottom:8px;">Auction Results</h2><p style="font-size:14px; color:#666; margin-bottom:24px;">Month 8 • CHT-KGN-500K-50M</p></div>
+    <div class="card" style="background:linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);"><div style="text-align:center;"><div style="font-size:50px; margin-bottom:8px;">👑</div><div style="font-size:14px; margin-bottom:8px; opacity:0.8;">Prized Subscriber</div><div style="font-size:28px; font-weight:700; margin-bottom:4px;">${winner}</div></div></div>
+    <h3 style="font-size:14px; margin:20px 0 12px;">Final Leaderboard</h3>
+    ${[{pos: 1, name: winner, discount: 100000},{pos: 2, name: subscribers[3], discount: 95000},{pos: 3, name: subscribers[4], discount: 92000}].map(bid => `<div class="leaderboard-item ${bid.pos === 1 ? 'top' : ''}"><div class="leaderboard-position" style="${bid.pos === 1 ? 'background:#ffd700; color:#000;' : ''}">${bid.pos === 1 ? '👑' : bid.pos}</div><div class="leaderboard-info"><div class="leaderboard-name">${bid.name}</div><div class="leaderboard-amount">₹${bid.discount.toLocaleString('en-IN')}</div></div></div>`).join('')}
+    <div class="card" style="background:#f0f8ff; margin-top:20px;"><div style="text-align:center;"><div style="font-size:13px; color:#666; margin-bottom:8px;">Non-Prized Dividend</div><div style="font-size:24px; font-weight:700; color:#28a745;">₹1,530</div><div style="font-size:12px; color:#666; margin-top:4px;">per member</div></div></div>
+  `},
+  
+  // 25. SELFIE-2 - Final Compliance Selfie (AFTER CLOSING)
+  { id: "SELFIE-2", title: "Final Compliance Selfie", role: "System", content: `
+    <div style="text-align:center; padding:40px 20px;">
+      <div style="width:120px; height:120px; border-radius:50%; background:linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); margin:0 auto 24px; display:flex; align-items:center; justify-content:center; font-size:60px;">📸</div>
+      <h2 style="margin-bottom:16px;">Final Compliance Check</h2>
+      <p style="font-size:14px; color:#666; margin-bottom:24px; line-height:1.5;">Auction completed successfully! All participants must take a final selfie for compliance and audit records.</p>
+      <div style="background:#fff3cd; padding:16px; border-radius:12px; margin:20px 0;">
+        <h3 style="font-size:16px; margin-bottom:12px; color:#856404;">⚠️ Important Notice</h3>
+        <p style="font-size:13px; color:#856404; line-height:1.6; margin:0;">This selfie is mandatory for legal compliance and will be stored securely with the auction records. It helps verify actual participation vs proxy participation.</p>
+      </div>
+      <div style="background:#d1ecf1; padding:16px; border-radius:12px; margin:20px 0;">
+        <h3 style="font-size:16px; margin-bottom:12px; color:#0c5460;">🔒 Data Protection</h3>
+        <ul style="text-align:left; font-size:13px; color:#0c5460; line-height:1.6;">
+          <li>Encrypted storage</li>
+          <li>Access restricted to authorized personnel</li>
+          <li>Retained for regulatory compliance</li>
+          <li>Can be deleted after legal retention period</li>
+        </ul>
+      </div>
+      <button class="btn btn-primary" style="margin-top:20px;">📸 Take Final Selfie</button>
+    </div>
+  `},
+  
+  // 25. F-11 - Commission Summary
+  { id: "F-11", title: "Commission Summary", role: "Foreman", content: `
+    <h2 style="margin-bottom:24px;">Calculation Summary</h2>
+    <div class="pie-chart"></div>
+    <div class="card"><h3 style="font-size:15px; margin-bottom:16px;">Financial Breakdown</h3><div class="info-row"><span class="info-label">Chit Value</span><span class="info-value">₹5,00,000</span></div><div class="info-row"><span class="info-label">Winner Discount</span><span class="info-value">₹1,00,000</span></div><div class="info-row"><span class="info-label">Commission (5%)</span><span class="info-value" style="color:#ffc107;">₹25,000</span></div><div class="info-row"><span class="info-label">Dividend Pool</span><span class="info-value">₹75,000</span></div><div class="info-row"><span class="info-label">Non-Prized</span><span class="info-value">49</span></div><div class="info-row" style="background:#f0f8ff; padding:12px; border-radius:8px; margin-top:12px;"><span class="info-label" style="font-weight:600;">Dividend/Member</span><span class="info-value" style="color:#28a745; font-size:18px;">₹1,530</span></div></div>
+    <div style="margin-top:16px; padding:12px; background:#f8f9fa; border-radius:8px; font-size:12px; color:#666;">💡 (₹1,00,000 - ₹25,000) ÷ 49 = ₹1,530</div>
+  `},
+  
+  // 26. P-01 - Winner Notification (RAVI)
+  { id: "P-01", title: "Winner Notification", role: "Prized Subscriber", header: "gold", content: `
+    <div style="text-align:center; padding:30px 0;">
+      <div style="font-size:100px;">🎉</div>
+      <h1 style="font-size:28px; margin:24px 0 8px;">Congratulations!</h1>
+      <h2 style="font-size:24px; font-weight:700; margin-bottom:16px;">${winner}</h2>
+      <p style="font-size:16px; color:#666; margin-bottom:32px;">You are the Prized Subscriber for Month 8</p>
+      <div class="card" style="background:#fff;"><div class="info-row"><span class="info-label">Chit ID</span><span class="info-value">CHT-KGN-500K-50M</span></div><div class="info-row"><span class="info-label">Discount</span><span class="info-value">₹1,00,000</span></div><div class="info-row"><span class="info-label">Prize</span><span class="info-value" style="color:#28a745; font-size:20px;">₹4,00,000</span></div></div>
+      <button class="btn btn-primary" style="margin-top:24px; background:linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color:#000;">📄 Download Proof</button>
+    </div>
+  `},
+  
+  // 27. P-02 - Prize Breakdown (RAVI)
+  { id: "P-02", title: "Prize Breakdown", role: "Prized Subscriber", header: "gold", content: `
+    <h2 style="margin-bottom:24px;">Prize Details</h2>
+    <div class="pie-chart" style="margin:32px auto;"></div>
+    <div class="card"><h3 style="font-size:15px; margin-bottom:16px; text-align:center;">Financial Breakdown</h3><div style="display:flex; justify-content:space-around; margin-bottom:20px;"><div style="text-align:center;"><div style="width:50px; height:50px; background:#4facfe; border-radius:50%; margin:0 auto 8px;"></div><div style="font-size:12px; color:#666;">Prize</div><div style="font-size:16px; font-weight:600;">₹4,00,000</div></div><div style="text-align:center;"><div style="width:50px; height:50px; background:#ffd200; border-radius:50%; margin:0 auto 8px;"></div><div style="font-size:12px; color:#666;">Commission</div><div style="font-size:16px; font-weight:600;">₹25,000</div></div><div style="text-align:center;"><div style="width:50px; height:50px; background:#6c757d; border-radius:50%; margin:0 auto 8px;"></div><div style="font-size:12px; color:#666;">Dividend</div><div style="font-size:16px; font-weight:600;">₹75,000</div></div></div><div class="info-row"><span class="info-label">Chit Value</span><span class="info-value">₹5,00,000</span></div><div class="info-row"><span class="info-label">Your Discount</span><span class="info-value">₹1,00,000</span></div><div class="info-row"><span class="info-label">Commission</span><span class="info-value">₹25,000</span></div><div class="info-row" style="background:#f0f8ff; padding:12px; border-radius:8px; margin-top:12px;"><span class="info-label" style="font-weight:600;">Take-home</span><span class="info-value" style="color:#28a745; font-size:20px;">₹4,00,000</span></div></div>
+  `},
+  
+  // 28. P-03 - Proof Download (RAVI)
+  { id: "P-03", title: "Proof Download", role: "Prized Subscriber", header: "gold", content: `
+    <h2 style="margin-bottom:24px;">Download Proof of Winning</h2>
+    <div class="card" style="background:linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,237,78,0.1)); border:2px solid #ffd700;"><div style="text-align:center; padding:20px 0;"><div style="font-size:60px; margin-bottom:16px;">📄</div><div style="font-size:14px; color:#666; margin-bottom:8px;">Certificate</div><div style="font-size:16px; font-weight:600; margin-bottom:20px;">auction_CHT-KGN-500K-8_summary.pdf</div></div></div>
+    <h3 style="font-size:14px; margin:24px 0 12px;">PDF Preview:</h3>
+    <div style="background:#f8f9fa; padding:16px; border-radius:10px; font-size:12px; line-height:1.8; margin-bottom:20px;"><strong>Brindavan Chits Karimnagar (India) Pvt Ltd</strong><br>Auction Summary — Month 8<br><br><strong>Chit ID:</strong> CHT-KGN-500K-50M<br><strong>Prized Subscriber:</strong> ${winner}<br><strong>Discount:</strong> ₹1,00,000<br><strong>Prize:</strong> ₹4,00,000<br><br><strong>Commission (5%):</strong> ₹25,000<br><strong>Dividend Pool:</strong> ₹75,000<br><strong>Dividend/Member:</strong> ₹1,530<br><br><strong>Attendance:</strong> ${presentMembers.length} Present, ${absentMembers.length} Absent<br><strong>Timestamp:</strong> 2025-10-15T09:31:30+05:30</div>
+    <button class="btn btn-primary" onclick="downloadFile('proof.pdf')" style="background:linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color:#000;">📥 Download PDF</button>
+    <button class="btn btn-secondary" onclick="downloadFile('proof.csv')">📊 Download CSV</button>
+  `},
+  
+  // 29. P-04 - Download Confirmation
+  { id: "P-04", title: "Download Complete", role: "Prized Subscriber", content: `
+    <div style="text-align:center; padding:40px 0;">
+      <div style="width:120px; height:120px; border-radius:50%; background:linear-gradient(135deg, #00b09b, #96c93d); margin:0 auto 24px; display:flex; align-items:center; justify-content:center; font-size:60px; animation:scaleIn 0.5s;">✓</div>
+      <h2 style="margin-bottom:16px;">Download Complete!</h2>
+      <p style="font-size:14px; color:#666; margin-bottom:32px;">Your proof has been downloaded</p>
+      <div class="card"><div style="text-align:center;"><div style="font-size:40px; margin-bottom:12px;">📄</div><div style="font-size:14px; font-weight:600; margin-bottom:4px;">auction_CHT-KGN-500K-8_summary.pdf</div><div style="font-size:12px; color:#666;">320 KB</div></div></div>
+      <button class="btn btn-primary" style="margin-top:24px;">📂 Open</button><button class="btn btn-secondary">✕ Close</button>
+    </div>
+  `},
+  
+  // 30. F-12 - Audit Log (RAVI)
+  { id: "F-12", title: "Secure Audit Trail", role: "Foreman", content: `
+    <h2 style="margin-bottom:16px;">Secure Transaction History</h2>
+    <p style="font-size:13px; color:#666; margin-bottom:24px;">Tamper-proof record of all auction activities</p>
+    <div style="margin-bottom:16px; padding:12px; background:#f0f8ff; border-radius:8px; font-size:12px; text-align:center;">🔐 Hash Chain Verified</div>
+    ${[{time: "09:00:00", event: "Link generated", by: "System"},{time: "09:05:12", event: `${subscribers[0]} joined`, by: subscribers[0]},{time: "09:05:25", event: `${winner} joined`, by: winner},{time: "09:15:00", event: "Auction started", by: "System"},{time: "09:30:28", event: `${winner} bid ₹1,00,000`, by: winner},{time: "09:31:30", event: `Auction closed, winner: ${winner}`, by: "System"}].map(log => `<div class="timeline-event"><div class="timeline-time">${log.time}</div><div class="timeline-desc">${log.event}</div><div style="font-size:11px; color:#999; margin-top:4px;">by ${log.by}</div></div>`).join('')}
+    <button class="btn btn-primary" style="margin-top:16px;">📥 Export JSON</button>
+  `},
+  
+  // 31. F-13 - Download Reports
+  { id: "F-13", title: "Download Reports", role: "Foreman", content: `
+    <h2 style="margin-bottom:24px;">Export Documents</h2>
+    <div class="download-file"><div class="file-info"><div class="file-name">📄 auction_summary.pdf</div><div class="file-size">320 KB</div></div><button class="download-btn" onclick="downloadFile('summary.pdf')">Download</button></div>
+    <div class="download-file"><div class="file-info"><div class="file-name">📊 auction_bids.csv</div><div class="file-size">42 KB</div></div><button class="download-btn" onclick="downloadFile('bids.csv')">Download</button></div>
+    <div class="download-file"><div class="file-info"><div class="file-name">🔐 auction_audit.json</div><div class="file-size">60 KB</div></div><button class="download-btn" onclick="downloadFile('audit.json')">Download</button></div>
+    <button class="btn btn-primary" style="margin-top:20px;">📦 Download All</button>
+  `},
+  
+  // 32. F-14 - Upcoming
+  { id: "F-14", title: "Upcoming Chits", role: "Foreman", content: `
+    <h2 style="margin-bottom:24px;">Next Auction Preview</h2>
+    <div class="card" style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; text-align:center; padding:24px;"><div style="font-size:14px; opacity:0.9; margin-bottom:12px;">Month 9 Auction</div><div style="font-size:32px; font-weight:700; margin-bottom:16px;">Nov 15, 2025</div><div style="font-size:14px; opacity:0.9;">CHT-KGN-500K-50M</div></div>
+    <div style="margin:24px 0;"><div style="font-size:13px; color:#666; margin-bottom:8px; text-align:center;">Time Until Next</div><div style="display:flex; justify-content:center; gap:16px;"><div style="text-align:center;"><div style="font-size:32px; font-weight:700; color:#4facfe;">30</div><div style="font-size:12px; color:#666;">Days</div></div><div style="text-align:center;"><div style="font-size:32px; font-weight:700; color:#4facfe;">05</div><div style="font-size:12px; color:#666;">Hours</div></div></div></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:25%;"></div></div>
+    <button class="btn btn-primary" style="margin-top:20px;">📅 View Calendar</button><button class="btn btn-secondary">📢 Notify</button>
+  `},
+  
+  
+];
+
+let currentSlideIndex = 0;
+
+function renderSlides() {
+  const container = document.getElementById('slideshowContainer');
+  container.innerHTML = slides.map((slide, index) => `
+    <div class="slide ${index === 0 ? 'active' : ''}" id="slide-${index}">
+      <div class="slide-header ${slide.header || ''}">
+        <h1>${slide.title}</h1>
+        <div class="subtitle">${slide.role}</div>
+      </div>
+      <div class="slide-content">${slide.content}</div>
+    </div>
+  `).join('');
+  document.getElementById('totalSlides').textContent = slides.length;
+}
+
+function changeSlide(direction) {
+  const slideElements = document.querySelectorAll('.slide');
+  slideElements[currentSlideIndex].classList.remove('active');
+  currentSlideIndex += direction;
+  if (currentSlideIndex >= slides.length) currentSlideIndex = 0;
+  if (currentSlideIndex < 0) currentSlideIndex = slides.length - 1;
+  slideElements[currentSlideIndex].classList.add('active');
+  document.getElementById('currentSlide').textContent = currentSlideIndex + 1;
+}
+
+function downloadFile(filename) {
+  const content = `Brindavan Chits Karimnagar - Auction Report\n\nSimulated download for demo.\n\nFile: ${filename}\nGenerated: ${new Date().toLocaleString()}\n\nChit ID: CHT-KGN-500K-50M\nMonth: 8\nPrized Subscriber: ${winner}\nDiscount: ₹1,00,000\nPrize: ₹4,00,000`;
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  window.URL.revokeObjectURL(url);
+  alert('✓ File downloaded: ' + filename);
+}
+
+// Keyboard
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft') changeSlide(-1);
+  if (e.key === 'ArrowRight') changeSlide(1);
+});
+
+// Swipe
+let touchStartX = 0;
+let touchEndX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+document.addEventListener('touchend', (e) => {
+  touchEndX = e.changedTouches[0].screenX;
+  if (touchEndX < touchStartX - 50) changeSlide(1);
+  if (touchEndX > touchStartX + 50) changeSlide(-1);
+});
+
+// Time update
+setInterval(() => {
+  const now = new Date();
+  document.getElementById('statusTime').textContent = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+}, 60000);
+
+renderSlides();
+</script>
+
+</body>
+</html>
+
