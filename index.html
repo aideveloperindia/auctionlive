@@ -741,16 +741,23 @@ let countdownTimers = {};
 function startCountdown(elementId, duration, callback) {
   if (countdownTimers[elementId]) {
     clearInterval(countdownTimers[elementId]);
+    delete countdownTimers[elementId];
   }
   
   let timeLeft = duration;
   const element = document.getElementById(elementId);
-  if (!element) return;
+  if (!element) {
+    console.log('Element not found:', elementId);
+    return;
+  }
   
   const updateDisplay = () => {
-    element.textContent = timeLeft + 's';
+    if (element) {
+      element.textContent = timeLeft + 's';
+    }
     if (timeLeft <= 0) {
       clearInterval(countdownTimers[elementId]);
+      delete countdownTimers[elementId];
       if (callback) callback();
     }
     timeLeft--;
@@ -764,31 +771,47 @@ function startCountdown(elementId, duration, callback) {
 function startSlideCountdowns() {
   const currentSlide = slides[currentSlideIndex];
   
+  // Clear any existing timers first
+  Object.keys(countdownTimers).forEach(timerId => {
+    clearInterval(countdownTimers[timerId]);
+    delete countdownTimers[timerId];
+  });
+  
   // F-05 - Start Auction Consent (60s)
   if (currentSlide.id === 'F-05') {
-    startCountdown('consent-countdown-1', 60);
-    startCountdown('consent-timer-1', 60);
+    setTimeout(() => {
+      startCountdown('consent-countdown-1', 60);
+      startCountdown('consent-timer-1', 60);
+    }, 100);
   }
   
   // F-08 - Close Auction Consent (60s)
   if (currentSlide.id === 'F-08') {
-    startCountdown('consent-countdown-2', 60);
-    startCountdown('consent-timer-2', 60);
+    setTimeout(() => {
+      startCountdown('consent-countdown-2', 60);
+      startCountdown('consent-timer-2', 60);
+    }, 100);
   }
   
   // S-05 - Timer/Inactivity Notice (60s)
   if (currentSlide.id === 'S-05') {
-    startCountdown('inactivity-countdown', 60);
+    setTimeout(() => {
+      startCountdown('inactivity-countdown', 60);
+    }, 100);
   }
   
   // S-05A - Final Countdown (60s)
   if (currentSlide.id === 'S-05A') {
-    startCountdown('final-countdown', 60);
+    setTimeout(() => {
+      startCountdown('final-countdown', 60);
+    }, 100);
   }
   
   // F-09 - Auto-Accept Notice (45s)
   if (currentSlide.id === 'F-09') {
-    startCountdown('auto-accept-countdown', 45);
+    setTimeout(() => {
+      startCountdown('auto-accept-countdown', 45);
+    }, 100);
   }
 }
 
