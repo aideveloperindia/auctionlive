@@ -201,10 +201,28 @@ const slides = [
     <div class="chit-card upcoming"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><span style="font-weight:600;">CHT-WGL-300K-30M</span><span class="badge yellow">Upcoming</span></div><div style="font-size:13px; color:#666; margin-bottom:12px;">Next: Nov 20, 2025</div><button class="btn btn-secondary">🔔 Reminder</button></div>
   `},
   
-  // 8. S-01 - Subscriber Login
-  { id: "S-01", title: "Join Auction", role: "Subscriber", content: `
-    <h2 style="text-align:center; margin-bottom:8px;">Join Auction — Month 8</h2>
-    <p style="text-align:center; font-size:13px; color:#666; margin-bottom:32px;">You are logged in as <strong>${subscribers[0]}</strong></p>
+  // 8. S-01 - Access Verification
+  { id: "S-01", title: "Auction Access Verification", role: "Subscriber", content: `
+    <h2 style="text-align:center; margin-bottom:16px;">Access Verification</h2>
+    <p style="text-align:center; font-size:13px; color:#666; margin-bottom:24px;">Verifying your eligibility for auction participation</p>
+    
+    <div style="background:#d1ecf1; padding:16px; border-radius:10px; margin:20px 0; text-align:center;">
+      <h3 style="font-size:16px; margin-bottom:12px; color:#0c5460;">🔍 Eligibility Check</h3>
+      <div style="font-size:13px; color:#0c5460; line-height:1.6;">
+        <div style="margin-bottom:8px;">✓ Payment Status: <strong>No Due</strong></div>
+        <div style="margin-bottom:8px;">✓ Installment: <strong>Paid</strong></div>
+        <div style="margin-bottom:8px;">✓ Subscriber Type: <strong>Non-Prized Subscriber (NPS)</strong></div>
+        <div style="color:#28a745; font-weight:600;">✓ Eligible for Auction</div>
+      </div>
+    </div>
+    
+    <div style="background:#fff3cd; padding:16px; border-radius:10px; margin:20px 0; font-size:13px; text-align:center;">
+      <strong>⚠️ Access Restrictions:</strong><br>
+      • Only "No Due" candidates with paid installments<br>
+      • Only Non-Prized Subscribers (NPS)<br>
+      • Already prized subscribers cannot access auction
+    </div>
+    
     <div class="card"><div class="info-row"><span class="info-label">Chit Value</span><span class="info-value">₹5,00,000</span></div><div class="info-row"><span class="info-label">Monthly</span><span class="info-value">₹10,000</span></div><div class="info-row"><span class="info-label">Chit ID</span><span class="info-value">CHT-KGN-500K-50M</span></div></div>
     <button class="btn btn-primary">✓ Mark Present & Join</button><button class="btn btn-secondary">📖 View Rules</button>
   `},
@@ -215,10 +233,12 @@ const slides = [
     <p style="font-size:13px; color:#666; margin-bottom:20px;">Please read carefully</p>
     <div class="rule-item"><strong>1.</strong> Bids are discount amounts from chit value.</div>
     <div class="rule-item"><strong>2.</strong> Highest discount wins as Prized Subscriber.</div>
-    <div class="rule-item"><strong>3.</strong> Brindavan Chits commission = 5% (₹25,000).</div>
-    <div class="rule-item"><strong>4.</strong> Discount minus commission distributed as dividend.</div>
-    <div class="rule-item"><strong>5.</strong> Inactivity auto-accepts consent after 60s.</div>
-    <div class="rule-item"><strong>6.</strong> One bid per 5-second interval.</div>
+    <div class="rule-item"><strong>3.</strong> <strong>IMPORTANT:</strong> Only bids MORE than ₹100 above the previous highest bid are allowed.</div>
+    <div class="rule-item"><strong>4.</strong> No bids less than ₹100 above current highest bid will be accepted.</div>
+    <div class="rule-item"><strong>5.</strong> Brindavan Chits commission = 5% (₹25,000).</div>
+    <div class="rule-item"><strong>6.</strong> Discount minus commission distributed as dividend to ALL participants.</div>
+    <div class="rule-item"><strong>7.</strong> Total auction time is 5 minutes only.</div>
+    <div class="rule-item"><strong>8.</strong> One bid per 5-second interval.</div>
     <button class="btn btn-primary" style="margin-top:24px;">✓ I Understand</button>
   `},
   
@@ -251,16 +271,20 @@ const slides = [
     </div>
   `},
   
-  // 11. S-03A - Live Bidding Room Opening
-  { id: "S-03A", title: "Live Bidding Room - Opening", role: "Subscriber", content: `
+  // 11. S-03A - Live Bidding Room Opening (5 MINUTE AUCTION)
+  { id: "S-03A", title: "Live Bidding Room - 5 Min Auction", role: "Subscriber", content: `
     <h2 style="text-align:center; margin-bottom:16px;">Chit Auction Live — Month 8</h2>
-    <div class="countdown-circle" id="opening-countdown">60s</div>
-    <div class="card"><div class="info-row"><span class="info-label">Chit ID</span><span class="info-value">CHT-KGN-500K-50M</span></div><div class="info-row"><span class="info-label">Value</span><span class="info-value">₹5,00,000</span></div><div class="info-row"><span class="info-label">Starting Discount</span><span class="info-value">₹50,000</span></div></div>
+    <div style="background:#dc3545; color:#fff; padding:16px; border-radius:10px; text-align:center; margin-bottom:20px;">
+      <div style="font-size:18px; font-weight:700; margin-bottom:8px;">⏰ 5 MINUTE AUCTION</div>
+      <div style="font-size:14px;">Auction starts immediately after selfie verification</div>
+    </div>
+    <div class="countdown-circle" id="auction-timer" style="background:linear-gradient(135deg, #dc3545 0%, #c82333 100%);">5:00</div>
+    <div class="card"><div class="info-row"><span class="info-label">Chit ID</span><span class="info-value">CHT-KGN-500K-50M</span></div><div class="info-row"><span class="info-label">Value</span><span class="info-value">₹5,00,000</span></div><div class="info-row"><span class="info-label">Starting Discount</span><span class="info-value">₹50,000</span></div><div class="info-row"><span class="info-label">Auction Duration</span><span class="info-value" style="color:#dc3545;">5 Minutes Only</span></div></div>
     <h3 style="font-size:14px; margin:20px 0 12px;">Active Subscribers (${presentMembers.length})</h3>
     <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;">${presentMembers.slice(0, 8).map(name => `<span class="badge green">🟢 ${name}</span>`).join('')}</div>
-    <div class="form-group"><label class="form-label">Enter Discount (₹)</label><input type="number" class="input-field" placeholder="Enter discount"></div>
+    <div class="form-group"><label class="form-label">Enter Discount (₹)</label><input type="number" class="input-field" placeholder="Enter discount (min ₹100 above current)"></div>
     <button class="btn btn-primary">Submit Bid</button>
-    <div style="font-size:12px; color:#666; text-align:center; margin-top:12px;">⏱️ One bid per 10s interval</div>
+    <div style="font-size:12px; color:#666; text-align:center; margin-top:12px;">⏱️ 5 minutes total • One bid per 5s interval</div>
   `},
   
   // 12. S-03B - Real-time Bids (MOVED FROM POSITION 16) - LOWER BIDS FIRST
@@ -318,13 +342,16 @@ const slides = [
     </div>
   `},
   
-  // 17. S-05 - Inactivity Alert (RAVI'S FINAL WINNING BID)
-  { id: "S-05", title: "Inactivity Alert", role: "Subscriber", content: `
-    <h2 style="text-align:center; margin-bottom:16px;">⚠️ Inactivity Alert</h2>
-    <div class="countdown-circle" id="inactivity-countdown">60s</div>
-    <p style="text-align:center; font-size:14px; color:#666; margin-bottom:24px;">No new bid for 60s<br>Auction may close soon</p>
-    <div class="progress-bar" style="margin:24px 0;"><div class="progress-fill" style="width:40%; background:linear-gradient(90deg, #ff6b6b 0%, #ee5a6f 100%);"></div></div>
+  // 17. S-05 - 5 Minute Auction Progress (RAVI'S FINAL WINNING BID)
+  { id: "S-05", title: "5 Minute Auction Progress", role: "Subscriber", content: `
+    <h2 style="text-align:center; margin-bottom:16px;">⏰ 5 Minute Auction</h2>
+    <div class="countdown-circle" id="auction-progress-timer" style="background:linear-gradient(135deg, #dc3545 0%, #c82333 100%);">3:45</div>
+    <p style="text-align:center; font-size:14px; color:#666; margin-bottom:24px;">Auction in progress<br>Time remaining</p>
+    <div class="progress-bar" style="margin:24px 0;"><div class="progress-fill" style="width:75%; background:linear-gradient(90deg, #dc3545 0%, #c82333 100%);"></div></div>
     <div class="card"><div style="font-size:14px; color:#666; margin-bottom:8px;">Current Top</div><div style="font-size:24px; font-weight:700; color:#4facfe; margin-bottom:8px;">₹1,00,000</div><div style="font-size:13px; color:#666;">by ${winner}</div></div>
+    <div style="background:#fff3cd; padding:12px; border-radius:8px; margin:16px 0; font-size:12px; color:#856404; text-align:center;">
+      <strong>⚠️ 5 Minute Rule:</strong> Auction closes automatically after 5 minutes. No extensions.
+    </div>
     <button class="btn btn-primary">Place New Bid</button><button class="btn btn-secondary">Wait</button>
   `},
   
@@ -337,22 +364,27 @@ const slides = [
     <div style="text-align:center; font-size:13px; color:#666;">⏱️ Auction in progress...</div>
   `},
   
-  // 19. S-05A - Final Countdown (RAVI TOP)
-  { id: "S-05A", title: "Final Countdown", role: "Subscriber", content: `
-    <h2 style="text-align:center; margin-bottom:16px; color:#dc3545;">🔥 Final 60 Seconds!</h2>
-    <p style="text-align:center; font-size:14px; margin-bottom:24px;">Last call for bids</p>
-    <div style="width:200px; height:200px; border-radius:50%; background:conic-gradient(#dc3545 0% 60%, #e0e0e0 60% 100%); margin:20px auto; display:flex; align-items:center; justify-content:center;"><div style="width:160px; height:160px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; flex-direction:column;"><div style="font-size:42px; font-weight:700; color:#dc3545;" id="final-countdown">60</div><div style="font-size:13px; color:#666;">seconds</div></div></div>
-    <div class="card"><div style="text-align:center;"><div style="font-size:13px; color:#666; margin-bottom:8px;">No higher bid yet</div><div style="font-size:20px; font-weight:700; color:#4facfe; margin-bottom:4px;">₹1,00,000</div><div style="font-size:14px; color:#666;">by ${winner}</div></div></div>
-    <div style="background:#fff3cd; padding:16px; border-radius:10px; margin:20px 0; font-size:13px; text-align:center;">⏰ If no bid in 60s, enters close consent</div>
+  // 19. S-05A - Final 30 Seconds (5 MINUTE AUCTION)
+  { id: "S-05A", title: "Final 30 Seconds", role: "Subscriber", content: `
+    <h2 style="text-align:center; margin-bottom:16px; color:#dc3545;">🔥 Final 30 Seconds!</h2>
+    <p style="text-align:center; font-size:14px; margin-bottom:24px;">5 minute auction ending soon</p>
+    <div style="width:200px; height:200px; border-radius:50%; background:conic-gradient(#dc3545 0% 90%, #e0e0e0 90% 100%); margin:20px auto; display:flex; align-items:center; justify-content:center;"><div style="width:160px; height:160px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; flex-direction:column;"><div style="font-size:42px; font-weight:700; color:#dc3545;" id="final-countdown">30</div><div style="font-size:13px; color:#666;">seconds</div></div></div>
+    <div class="card"><div style="text-align:center;"><div style="font-size:13px; color:#666; margin-bottom:8px;">Current highest</div><div style="font-size:20px; font-weight:700; color:#4facfe; margin-bottom:4px;">₹1,00,000</div><div style="font-size:14px; color:#666;">by ${winner}</div></div></div>
+    <div style="background:#dc3545; color:#fff; padding:16px; border-radius:10px; margin:20px 0; font-size:13px; text-align:center;">
+      <strong>⏰ 5 MINUTE RULE:</strong> Auction closes automatically in 30 seconds. No extensions allowed.
+    </div>
     <button class="btn btn-primary">🚀 Place Bid</button><button class="btn btn-secondary">⏳ Wait</button>
   `},
   
-  // 20. F-08 - Consent to Close (RAVI)
-  { id: "F-08", title: "Close Confirmation", role: "Foreman", content: `
-    <h2 style="text-align:center; margin-bottom:16px;">Close Auction?</h2>
-    <div class="countdown-circle" id="consent-countdown-2">60s</div>
+  // 20. F-08 - 5 Minute Auction Complete (RAVI)
+  { id: "F-08", title: "5 Minute Auction Complete", role: "Foreman", content: `
+    <h2 style="text-align:center; margin-bottom:16px;">5 Minute Auction Complete</h2>
+    <div style="background:#28a745; color:#fff; padding:16px; border-radius:10px; text-align:center; margin-bottom:20px;">
+      <div style="font-size:18px; font-weight:700; margin-bottom:8px;">✅ AUCTION CLOSED</div>
+      <div style="font-size:14px;">5 minute time limit reached</div>
+    </div>
     <div class="card" style="background:#ffeaa7;"><div style="text-align:center;"><div style="font-size:14px; margin-bottom:8px;">Prized Subscriber</div><div style="font-size:24px; font-weight:700; margin-bottom:8px;">${winner}</div><div style="font-size:16px; color:#666;">Discount: ₹1,00,000</div></div></div>
-    <div style="background:#d1ecf1; padding:16px; border-radius:10px; margin:20px 0; font-size:13px; text-align:center;">ℹ️ All must consent<br>Auto-accept after <span id="consent-timer-2">60s</span></div>
+    <div style="background:#d1ecf1; padding:16px; border-radius:10px; margin:20px 0; font-size:13px; text-align:center;">ℹ️ 5 minute auction completed automatically<br>All participants must consent to finalize</div>
     <button class="btn btn-primary">✓ Agree</button><button class="btn btn-secondary">⚠️ Dispute</button>
   `},
   
@@ -396,7 +428,7 @@ const slides = [
     <div class="card" style="background:linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);"><div style="text-align:center;"><div style="font-size:50px; margin-bottom:8px;">👑</div><div style="font-size:14px; margin-bottom:8px; opacity:0.8;">Prized Subscriber</div><div style="font-size:28px; font-weight:700; margin-bottom:4px;">${winner}</div></div></div>
     <h3 style="font-size:14px; margin:20px 0 12px;">Final Leaderboard</h3>
     ${[{pos: 1, name: winner, discount: 100000},{pos: 2, name: subscribers[3], discount: 95000},{pos: 3, name: subscribers[4], discount: 92000}].map(bid => `<div class="leaderboard-item ${bid.pos === 1 ? 'top' : ''}"><div class="leaderboard-position" style="${bid.pos === 1 ? 'background:#ffd700; color:#000;' : ''}">${bid.pos === 1 ? '👑' : bid.pos}</div><div class="leaderboard-info"><div class="leaderboard-name">${bid.name}</div><div class="leaderboard-amount">₹${bid.discount.toLocaleString('en-IN')}</div></div></div>`).join('')}
-    <div class="card" style="background:#f0f8ff; margin-top:20px;"><div style="text-align:center;"><div style="font-size:13px; color:#666; margin-bottom:8px;">Non-Prized Dividend</div><div style="font-size:24px; font-weight:700; color:#28a745;">₹1,530</div><div style="font-size:12px; color:#666; margin-top:4px;">per member</div></div></div>
+    <div class="card" style="background:#f0f8ff; margin-top:20px;"><div style="text-align:center;"><div style="font-size:13px; color:#666; margin-bottom:8px;">Dividend for ALL Participants</div><div style="font-size:24px; font-weight:700; color:#28a745;">₹1,500</div><div style="font-size:12px; color:#666; margin-top:4px;">per member (including prized subscriber)</div></div></div>
   `},
   
   // 25. SELFIE-2 - Final Compliance Selfie (AFTER CLOSING)
@@ -426,8 +458,8 @@ const slides = [
   { id: "F-11", title: "Commission Summary", role: "Foreman", content: `
     <h2 style="margin-bottom:24px;">Calculation Summary</h2>
     <div class="pie-chart"></div>
-    <div class="card"><h3 style="font-size:15px; margin-bottom:16px;">Financial Breakdown</h3><div class="info-row"><span class="info-label">Chit Value</span><span class="info-value">₹5,00,000</span></div><div class="info-row"><span class="info-label">Winner Discount</span><span class="info-value">₹1,00,000</span></div><div class="info-row"><span class="info-label">Commission (5%)</span><span class="info-value" style="color:#ffc107;">₹25,000</span></div><div class="info-row"><span class="info-label">Dividend Pool</span><span class="info-value">₹75,000</span></div><div class="info-row"><span class="info-label">Non-Prized</span><span class="info-value">49</span></div><div class="info-row" style="background:#f0f8ff; padding:12px; border-radius:8px; margin-top:12px;"><span class="info-label" style="font-weight:600;">Dividend/Member</span><span class="info-value" style="color:#28a745; font-size:18px;">₹1,530</span></div></div>
-    <div style="margin-top:16px; padding:12px; background:#f8f9fa; border-radius:8px; font-size:12px; color:#666;">💡 (₹1,00,000 - ₹25,000) ÷ 49 = ₹1,530</div>
+    <div class="card"><h3 style="font-size:15px; margin-bottom:16px;">Financial Breakdown</h3><div class="info-row"><span class="info-label">Chit Value</span><span class="info-value">₹5,00,000</span></div><div class="info-row"><span class="info-label">Winner Discount</span><span class="info-value">₹1,00,000</span></div><div class="info-row"><span class="info-label">Commission (5%)</span><span class="info-value" style="color:#ffc107;">₹25,000</span></div><div class="info-row"><span class="info-label">Dividend Pool</span><span class="info-value">₹75,000</span></div><div class="info-row"><span class="info-label">Total Participants</span><span class="info-value">50</span></div><div class="info-row" style="background:#f0f8ff; padding:12px; border-radius:8px; margin-top:12px;"><span class="info-label" style="font-weight:600;">Dividend/Member (ALL)</span><span class="info-value" style="color:#28a745; font-size:18px;">₹1,500</span></div></div>
+    <div style="margin-top:16px; padding:12px; background:#f8f9fa; border-radius:8px; font-size:12px; color:#666;">💡 (₹1,00,000 - ₹25,000) ÷ 50 = ₹1,500 (including prized subscriber)</div>
   `},
   
   // 26. P-01 - Winner Notification (RAVI)
@@ -446,7 +478,7 @@ const slides = [
   { id: "P-02", title: "Prize Breakdown", role: "Prized Subscriber", header: "gold", content: `
     <h2 style="margin-bottom:24px;">Prize Details</h2>
     <div class="pie-chart" style="margin:32px auto;"></div>
-    <div class="card"><h3 style="font-size:15px; margin-bottom:16px; text-align:center;">Financial Breakdown</h3><div style="display:flex; justify-content:space-around; margin-bottom:20px;"><div style="text-align:center;"><div style="width:50px; height:50px; background:#4facfe; border-radius:50%; margin:0 auto 8px;"></div><div style="font-size:12px; color:#666;">Prize</div><div style="font-size:16px; font-weight:600;">₹4,00,000</div></div><div style="text-align:center;"><div style="width:50px; height:50px; background:#ffd200; border-radius:50%; margin:0 auto 8px;"></div><div style="font-size:12px; color:#666;">Commission</div><div style="font-size:16px; font-weight:600;">₹25,000</div></div><div style="text-align:center;"><div style="width:50px; height:50px; background:#6c757d; border-radius:50%; margin:0 auto 8px;"></div><div style="font-size:12px; color:#666;">Dividend</div><div style="font-size:16px; font-weight:600;">₹75,000</div></div></div><div class="info-row"><span class="info-label">Chit Value</span><span class="info-value">₹5,00,000</span></div><div class="info-row"><span class="info-label">Your Discount</span><span class="info-value">₹1,00,000</span></div><div class="info-row"><span class="info-label">Commission</span><span class="info-value">₹25,000</span></div><div class="info-row" style="background:#f0f8ff; padding:12px; border-radius:8px; margin-top:12px;"><span class="info-label" style="font-weight:600;">Take-home</span><span class="info-value" style="color:#28a745; font-size:20px;">₹4,00,000</span></div></div>
+    <div class="card"><h3 style="font-size:15px; margin-bottom:16px; text-align:center;">Financial Breakdown</h3><div style="display:flex; justify-content:space-around; margin-bottom:20px;"><div style="text-align:center;"><div style="width:50px; height:50px; background:#4facfe; border-radius:50%; margin:0 auto 8px;"></div><div style="font-size:12px; color:#666;">Prize</div><div style="font-size:16px; font-weight:600;">₹4,00,000</div></div><div style="text-align:center;"><div style="width:50px; height:50px; background:#ffd200; border-radius:50%; margin:0 auto 8px;"></div><div style="font-size:12px; color:#666;">Commission</div><div style="font-size:16px; font-weight:600;">₹25,000</div></div><div style="text-align:center;"><div style="width:50px; height:50px; background:#28a745; border-radius:50%; margin:0 auto 8px;"></div><div style="font-size:12px; color:#666;">Your Dividend</div><div style="font-size:16px; font-weight:600;">₹1,500</div></div></div><div class="info-row"><span class="info-label">Chit Value</span><span class="info-value">₹5,00,000</span></div><div class="info-row"><span class="info-label">Your Discount</span><span class="info-value">₹1,00,000</span></div><div class="info-row"><span class="info-label">Commission</span><span class="info-value">₹25,000</span></div><div class="info-row"><span class="info-label">Your Dividend Share</span><span class="info-value" style="color:#28a745;">₹1,500</span></div><div class="info-row" style="background:#f0f8ff; padding:12px; border-radius:8px; margin-top:12px;"><span class="info-label" style="font-weight:600;">Total Take-home</span><span class="info-value" style="color:#28a745; font-size:20px;">₹4,01,500</span></div></div>
   `},
   
   // 28. P-03 - Proof Download (RAVI)
@@ -757,7 +789,14 @@ function startCountdown(elementId, duration, callback) {
   
   const updateDisplay = () => {
     if (element) {
-      element.textContent = timeLeft + 's';
+      if (timeLeft >= 60) {
+        // For 5-minute auction, show minutes:seconds format
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        element.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      } else {
+        element.textContent = timeLeft + 's';
+      }
     }
     if (timeLeft <= 0) {
       clearInterval(countdownTimers[elementId]);
@@ -824,11 +863,11 @@ function startSlideCountdowns() {
     }, 100);
   }
   
-  // S-03A - Live Bidding Room Opening (60s)
+  // S-03A - Live Bidding Room Opening (5 minute auction)
   if (currentSlide.id === 'S-03A') {
-    console.log('Starting S-03A countdown');
+    console.log('Starting S-03A 5-minute auction timer');
     setTimeout(() => {
-      startCountdown('opening-countdown', 60);
+      startCountdown('auction-timer', 300); // 5 minutes = 300 seconds
     }, 100);
   }
 }
